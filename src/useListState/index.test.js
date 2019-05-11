@@ -1,5 +1,5 @@
 import useListState from './index';
-import { addKey } from '../../helpers';
+import { addKey } from '@clutch/helpers';
 
 describe('useBooleanState Hook', () => {
   const setStateMock = jest.fn();

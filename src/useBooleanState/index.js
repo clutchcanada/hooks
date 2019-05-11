@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as R from 'ramda';
-import { throwError } from '../../helpers';
+import { throwError } from '@clutch/helpers';
 
 export const useBooleanState = ({
   initialState = false,

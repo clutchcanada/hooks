@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { throwError } from '../../helpers';
+import { throwError } from '@clutch/helpers';
 
 export const NO_ACTIVE_KEY = 'NO_ACTIVE_KEY';
 
