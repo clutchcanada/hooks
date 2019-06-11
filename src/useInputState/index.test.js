@@ -1,13 +1,15 @@
 import useInputState from './index';
 
 describe('UseInputState Hook', () => {
+  const mockUseEffect = jest.fn();
+
   describe('Initialization', () => {
     const mockUseState = global.useStateMock();
 
     it('should call useState with the initialValue', () => {
       mockUseState.mockClear();
       const initialValue = 5;
-      useInputState({ initialValue, useStateDep: mockUseState });
+      useInputState({ initialValue, useStateDep: mockUseState, useEffectDep: mockUseEffect });
 
       expect(mockUseState).toBeCalledWith(initialValue);
     });
@@ -17,6 +19,7 @@ describe('UseInputState Hook', () => {
       const { stateValue } = useInputState({
         initialValue,
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect,
       });
 
       expect(stateValue).toEqual(initialValue);
@@ -43,6 +46,7 @@ describe('UseInputState Hook', () => {
       const { handleChange } = useInputState({
         initialValue: 'yolo',
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect
       });
 
       handleChange(mockEvent);
@@ -63,6 +67,7 @@ describe('UseInputState Hook', () => {
         initialValue: 'yolo',
         useStateDep: mockUseState,
         sideEffects: [mockSideEffect, mockSideEffect2],
+        useEffectDep: mockUseEffect
       });
 
       handleChange(mockEvent);
@@ -86,6 +91,7 @@ describe('UseInputState Hook', () => {
       const { resetValue } = useInputState({
         initialValue,
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect
       });
       resetValue();
       expect(mockSetStateValue).toBeCalledWith(initialValue);
