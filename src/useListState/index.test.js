@@ -1,5 +1,7 @@
-import useListState from './index';
 import { addKey } from '@clutch/helpers';
+import * as R from "ramda";
+import useListState from './index';
+
 
 describe('useBooleanState Hook', () => {
   const setStateMock = jest.fn();
@@ -209,5 +211,34 @@ describe('useBooleanState Hook', () => {
 
       expect(sideEffects[0]).toBeCalledWith(testItem);
     });
+  });
+
+  describe("clearList", () => {
+    it('should call setState with an empty array', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { clearList } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      clearList();
+
+      expect(setStateMock).toBeCalledWith([]);
+    });
+  });
+
+  describe("mapValue", () => {
+    it('should give us the values of the keys', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { mapItem } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      const keysValues = mapItem(R.identity);
+
+      expect(keysValues).toEqual(['hey', 'buddy']);
+    }); 
+    
   });
 });

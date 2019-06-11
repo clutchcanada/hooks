@@ -48,12 +48,8 @@ export const useListState = ({
       setState([]);
     };
   
-    const mapValue = fn =>
-      map(
-        pipe(
-          prop('value'),
-          fn,
-        ),
+    const mapItem = fn =>
+      R.map(({ item }) => fn(item),
         listState,
       );
 
@@ -76,7 +72,7 @@ export const useListState = ({
     itemInStateForKey,
     setState,
     clearList,
-    mapValue,
+    mapItem,
   };
 };
 
