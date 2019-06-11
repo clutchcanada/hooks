@@ -24,6 +24,22 @@ describe('UseInputState Hook', () => {
 
       expect(stateValue).toEqual(initialValue);
     });
+
+    it('should call each sideEffect with the initialValue on mount', () => {
+      const sideEffectMock1 = jest.fn();
+      const sideEffectMock2 = jest.fn();
+      const initialValue = 'hello world';
+      const { stateValue } = useInputState({
+        initialValue,
+        useStateDep: mockUseState,
+        useEffectDep: (fn) => fn(),
+        sideEffects: [sideEffectMock1, sideEffectMock2]
+      });
+
+      expect(sideEffectMock1).toBeCalledWith(initialValue);
+      expect(sideEffectMock2).toBeCalledWith(initialValue);
+    });
+    
   });
 
   describe('handleChange', () => {
