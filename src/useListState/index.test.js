@@ -72,8 +72,8 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       addListItem(testItem);
-
-      expect(setStateMock).toBeCalledWith([...keys, testItem]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -127,8 +127,8 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       removeListItem(keys[0]);
-
-      expect(setStateMock).toBeCalledWith([keys[1]]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([keys[1]]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -167,8 +167,8 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       toggleListItem(keys[0]);
-
-      expect(setStateMock).toBeCalledWith([keys[1]]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([keys[1]]);
     });
 
     it('should call setState with current listState plus item if item is not in state', () => {
@@ -179,8 +179,8 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       toggleListItem(testItem);
-
-      expect(setStateMock).toBeCalledWith([...keys, testItem]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([...keys, testItem]);
     });
 
     it('should fire any removeListItemSideEffects passed if item is in state', () => {

@@ -25,13 +25,16 @@ export const useListState = ({
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
-    setState([...listState, item]);
+    setState(prevState => [...prevState, item]);
   };
 
   const removeListItem = item => {
-    const newState = listState.filter(({ key }) => item.key !== key);
     removeListItemSideEffects.forEach(R.applyTo(item));
-    setState(newState);
+    
+    setState(prevState => {
+      const newState = prevState.filter(({ key }) => item.key !== key);
+      return newState;
+    });
   };
 
   const toggleListItem = item =>
@@ -40,6 +43,19 @@ export const useListState = ({
       removeListItem,
       addListItem,
     )(item);
+
+    const clearList = () => {
+      setState([]);
+    };
+  
+    const mapValue = fn =>
+      map(
+        pipe(
+          prop('value'),
+          fn,
+        ),
+        listState,
+      );
 
   return {
     listState,
@@ -59,6 +75,8 @@ export const useListState = ({
     ),
     itemInStateForKey,
     setState,
+    clearList,
+    mapValue,
   };
 };
 
