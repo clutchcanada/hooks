@@ -1,5 +1,7 @@
-import useListState from './index';
 import { addKey } from '@clutch/helpers';
+import * as R from "ramda";
+import useListState from './index';
+
 
 describe('useBooleanState Hook', () => {
   const setStateMock = jest.fn();
@@ -72,8 +74,8 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       addListItem(testItem);
-
-      expect(setStateMock).toBeCalledWith([...keys, testItem]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -127,8 +129,8 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       removeListItem(keys[0]);
-
-      expect(setStateMock).toBeCalledWith([keys[1]]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([keys[1]]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -167,8 +169,8 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       toggleListItem(keys[0]);
-
-      expect(setStateMock).toBeCalledWith([keys[1]]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([keys[1]]);
     });
 
     it('should call setState with current listState plus item if item is not in state', () => {
@@ -179,8 +181,8 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       toggleListItem(testItem);
-
-      expect(setStateMock).toBeCalledWith([...keys, testItem]);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([...keys, testItem]);
     });
 
     it('should fire any removeListItemSideEffects passed if item is in state', () => {
@@ -209,5 +211,34 @@ describe('useBooleanState Hook', () => {
 
       expect(sideEffects[0]).toBeCalledWith(testItem);
     });
+  });
+
+  describe("clearList", () => {
+    it('should call setState with an empty array', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { clearList } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      clearList();
+
+      expect(setStateMock).toBeCalledWith([]);
+    });
+  });
+
+  describe("mapValue", () => {
+    it('should give us the values of the keys', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { mapItem } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      const keysValues = mapItem(R.identity);
+
+      expect(keysValues).toEqual(['hey', 'buddy']);
+    }); 
+    
   });
 });

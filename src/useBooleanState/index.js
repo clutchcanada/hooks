@@ -10,9 +10,9 @@ export const useBooleanState = ({
     throwError('Boolean state must be a boolean value');
   const [value, setBooleanState] = useStateDep(initialState);
 
-  const toggle = R.partial(setBooleanState, [!value]);
-  const setTrue = R.partial(setBooleanState, [true]);
-  const setFalse = R.partial(setBooleanState, [false]);
+  const toggle = () => setBooleanState(!value);
+  const setTrue = () => setBooleanState(true);
+  const setFalse = () => setBooleanState(false);
 
   return {
     value,

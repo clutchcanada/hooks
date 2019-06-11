@@ -1,13 +1,15 @@
 import useInputState from './index';
 
 describe('UseInputState Hook', () => {
+  const mockUseEffect = jest.fn();
+
   describe('Initialization', () => {
     const mockUseState = global.useStateMock();
 
     it('should call useState with the initialValue', () => {
       mockUseState.mockClear();
       const initialValue = 5;
-      useInputState({ initialValue, useStateDep: mockUseState });
+      useInputState({ initialValue, useStateDep: mockUseState, useEffectDep: mockUseEffect });
 
       expect(mockUseState).toBeCalledWith(initialValue);
     });
@@ -17,10 +19,27 @@ describe('UseInputState Hook', () => {
       const { stateValue } = useInputState({
         initialValue,
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect,
       });
 
       expect(stateValue).toEqual(initialValue);
     });
+
+    it('should call each sideEffect with the initialValue on mount', () => {
+      const sideEffectMock1 = jest.fn();
+      const sideEffectMock2 = jest.fn();
+      const initialValue = 'hello world';
+      const { stateValue } = useInputState({
+        initialValue,
+        useStateDep: mockUseState,
+        useEffectDep: (fn) => fn(),
+        sideEffects: [sideEffectMock1, sideEffectMock2]
+      });
+
+      expect(sideEffectMock1).toBeCalledWith(initialValue);
+      expect(sideEffectMock2).toBeCalledWith(initialValue);
+    });
+    
   });
 
   describe('handleChange', () => {
@@ -43,6 +62,7 @@ describe('UseInputState Hook', () => {
       const { handleChange } = useInputState({
         initialValue: 'yolo',
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect
       });
 
       handleChange(mockEvent);
@@ -63,6 +83,7 @@ describe('UseInputState Hook', () => {
         initialValue: 'yolo',
         useStateDep: mockUseState,
         sideEffects: [mockSideEffect, mockSideEffect2],
+        useEffectDep: mockUseEffect
       });
 
       handleChange(mockEvent);
@@ -86,6 +107,7 @@ describe('UseInputState Hook', () => {
       const { resetValue } = useInputState({
         initialValue,
         useStateDep: mockUseState,
+        useEffectDep: mockUseEffect
       });
       resetValue();
       expect(mockSetStateValue).toBeCalledWith(initialValue);
