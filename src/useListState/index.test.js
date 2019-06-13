@@ -164,13 +164,13 @@ describe('useBooleanState Hook', () => {
 
     it('should throw error if item has no key', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { removeLisItem } = useListState({
+      const { updateListItem } = useListState({
         initialValue: keys,
         useStateDep: useStateMock,
       });
 
       const test = () => {
-        removeLisItem({ item: 'hey' });
+        updateListItem({ item: 'hey' });
       };
 
       expect(test).toThrowError();
