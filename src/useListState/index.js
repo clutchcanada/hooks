@@ -52,6 +52,12 @@ export const useListState = ({
       R.map(({ item }) => fn(item),
         listState,
       );
+    const updateListItem = item => {
+      setState(prevState => {
+        const newState = prevState.filter(({ key }) => item.key !== key);
+        return [...newState, item];
+      })
+    };
 
   return {
     listState,
@@ -68,6 +74,11 @@ export const useListState = ({
     toggleListItem: R.compose(
       toggleListItem,
       checkItemHasKey,
+    ),
+    updateListItem: R.pipe(
+      checkItemHasKey,
+      checkItemIsInState,
+      updateListItem
     ),
     itemInStateForKey,
     setState,
