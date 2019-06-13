@@ -54,8 +54,10 @@ export const useListState = ({
       );
     const updateListItem = item => {
       setState(prevState => {
-        const newState = prevState.filter(({ key }) => item.key !== key);
-        return [...newState, item];
+        const indexToReplace = prevState.findIndex(({ key }) => item.key === key);
+        const newState = [...prevState];
+        newState[indexToReplace] = item;
+        return newState;
       })
     };
 

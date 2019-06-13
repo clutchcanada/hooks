@@ -147,6 +147,51 @@ describe('useBooleanState Hook', () => {
     });
   });
 
+  describe('updateListItem', () => {
+    it('should throw an error if item is not in state', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { updateListItem } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      const test = () => {
+        updateListItem({ item: 'yoyo', key: 'helpMe' });
+      };
+
+      expect(test).toThrowError();
+    });
+
+    it('should throw error if item has no key', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { removeLisItem } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+
+      const test = () => {
+        removeLisItem({ item: 'hey' });
+      };
+
+      expect(test).toThrowError();
+    });
+
+    it('should call setState with current listState and the updated item', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { updateListItem } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+      const updatedValue = {
+        ...keys[0],
+        item: "yolo"
+      };
+      updateListItem(updatedValue);
+      const calledWith = setStateMock.mock.calls[0][0](keys);
+      expect(calledWith).toEqual([updatedValue, keys[1]]);
+    });
+  });
+
   describe('toggleListItem', () => {
     it('should throw error if item has no key', () => {
       const keys = ['hey', 'buddy'].map(addKey);
