@@ -1,4 +1,3 @@
-
 import useWindowResize from "./index";
 
 describe("useWindowResize", () => {
