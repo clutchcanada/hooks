@@ -1,4 +1,3 @@
-
 import useScrollPosition from "./index";
 
 describe("useScrollPosition", () => {
