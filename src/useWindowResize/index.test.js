@@ -2,9 +2,12 @@
 import useWindowResize from "./index";
 
 describe("useWindowResize", () => {
-  it('should call setState on windowResize', () => {
+  it('should call setState on window resize', () => {
     const setStateMock = jest.fn();
-    useWindowResize({ useStateDep: global.useStateMock({ setStateMock }), useEffectDep: (fn) => fn() });
+    useWindowResize({
+      useStateDep: global.useStateMock({ setStateMock }),
+      useEffectDep: (fn) => fn(),
+    });
     global.innerWidth = 500;
     global.dispatchEvent(new Event('resize'));
 

@@ -2,7 +2,7 @@
 import useScrollPosition from "./index";
 
 describe("useScrollPosition", () => {
-  it('should call setState on windowResize', () => {
+  it('should call setState on window scroll', () => {
     const setStateMock = jest.fn();
     useScrollPosition({
       useStateDep: global.useStateMock({ setStateMock }),
