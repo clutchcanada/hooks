@@ -270,21 +270,6 @@ describe('useBooleanState Hook', () => {
     });
   });
 
-  describe("mapValue", () => {
-    it('should give us the values of the keys', () => {
-      const keys = ['hey', 'buddy'].map(addKey);
-      const { mapItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
-      });
-
-      const keysValues = mapItem(R.identity);
-
-      expect(keysValues).toEqual(['hey', 'buddy']);
-    }); 
-    
-  });
-
   describe("setState", () => {
     it('should call setStateMock with new array', () => {
       const keys = ['hey', 'buddy'].map(addKey);
@@ -297,5 +282,20 @@ describe('useBooleanState Hook', () => {
 
       expect(setStateMock).toBeCalledWith(newData);
     }); 
+    
+    it('should throw an error if items do not have keys', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { setState } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+      const attemptedUpdate = () => {
+        const newData = ['yolo', 'swaggins'];
+        setState(newData);
+      };
+
+      expect(attemptedUpdate).toThrowError();
+    })
+    
   });
 });
