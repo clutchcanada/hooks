@@ -30,16 +30,16 @@ export const useListState = ({
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
-    const newState = R.assoc(item.key, item, objectListState);
-    setListState(Object.values(newState));
-    setObjectState(newState);
+    objectListState[item.key] = item;
+    setListState(Object.values(objectListState));
+    setObjectState(objectListState);
   };
 
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
-    const newState = R.omit([item.key], objectListState);
-    setListState(Object.values(newState));
-    setObjectState(newState);
+    delete objectListState[item.key];
+    setListState(Object.values(objectListState));
+    setObjectState(objectListState);
   };
 
   const toggleListItem = R.ifElse(
@@ -58,9 +58,9 @@ export const useListState = ({
 
     const updateListItem = item => {
       const newItem = R.merge(objectListState[item.key], item);
-      const newState = R.assoc(item.key, newItem, objectListState);
-      setListState(Object.values(newState));
-      setObjectState(newState);
+      objectListState[item.key] = newItem;
+      setListState(Object.values(objectListState));
+      setObjectState(objectListState);
     };
   
     const setState = (newArray) => {
