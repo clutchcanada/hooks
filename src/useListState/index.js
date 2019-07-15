@@ -57,7 +57,7 @@ export const useListState = ({
     };
 
     const updateListItem = item => {
-      const newItem = R.merge(objectListState[item.key], item);
+      const newItem = R.mergeDeepRight(objectListState[item.key], item);
       objectListState[item.key] = newItem;
       setListState(Object.values(objectListState));
       setObjectState(objectListState);
