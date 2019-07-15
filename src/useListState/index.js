@@ -55,11 +55,6 @@ export const useListState = ({
       setListState([]);
       setObjectState({});
     };
-  
-    const mapItem = fn =>
-      R.map(({ item }) => fn(item),
-        listState,
-      );
 
     const updateListItem = item => {
       const newItem = R.merge(objectListState[item.key], item);
@@ -98,7 +93,6 @@ export const useListState = ({
     itemInStateForKey,
     setState,
     clearList,
-    mapItem,
   };
 };
 
