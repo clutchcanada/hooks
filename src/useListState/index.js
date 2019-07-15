@@ -69,7 +69,7 @@ export const useListState = ({
     };
   
     const setState = (newArray) => {
-      const newState = newArray.reduce(reduceArrayToObject);
+      const newState = newArray.map(checkItemHasKey).reduce(reduceArrayToObject, {});
       setListState(Object.values(newState)); 
       setObjectState(newState);
     };

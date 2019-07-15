@@ -284,4 +284,18 @@ describe('useBooleanState Hook', () => {
     }); 
     
   });
+
+  describe("setState", () => {
+    it('should call setStateMock with new array', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { setState } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+      const newData = ['yolo', 'swaggins'].map(addKey);
+      setState(newData);
+
+      expect(setStateMock).toBeCalledWith(newData);
+    }); 
+  });
 });
