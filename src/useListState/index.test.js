@@ -74,8 +74,7 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       addListItem(testItem);
-      const calledWith = setStateMock.mock.calls[0][0](keys);
-      expect(calledWith).toEqual([...keys, testItem]);
+      expect(setStateMock).toBeCalledWith([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -129,8 +128,7 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       removeListItem(keys[0]);
-      const calledWith = setStateMock.mock.calls[0][0](keys);
-      expect(calledWith).toEqual([keys[1]]);
+      expect(setStateMock).toBeCalledWith([keys[1]]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -187,7 +185,7 @@ describe('useBooleanState Hook', () => {
         item: "yolo"
       };
       updateListItem(updatedValue);
-      const calledWith = setStateMock.mock.calls[0][0](keys);
+      const calledWith = setStateMock.mock.calls[0][0];
       expect(calledWith).toEqual([updatedValue, keys[1]]);
     });
   });
@@ -214,7 +212,7 @@ describe('useBooleanState Hook', () => {
         useStateDep: useStateMock,
       });
       toggleListItem(keys[0]);
-      const calledWith = setStateMock.mock.calls[0][0](keys);
+      const calledWith = setStateMock.mock.calls[0][0];
       expect(calledWith).toEqual([keys[1]]);
     });
 
@@ -226,7 +224,7 @@ describe('useBooleanState Hook', () => {
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
       toggleListItem(testItem);
-      const calledWith = setStateMock.mock.calls[0][0](keys);
+      const calledWith = setStateMock.mock.calls[0][0];
       expect(calledWith).toEqual([...keys, testItem]);
     });
 

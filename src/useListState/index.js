@@ -2,6 +2,11 @@ import { useState } from 'react';
 import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 
+const reduceArrayToObject = (accumulator, value) => ({
+  ...accumulator,
+  [value.key]: value
+});
+
 export const useListState = ({
   initialValue = [],
   addListItemSideEffects = [],
@@ -10,10 +15,10 @@ export const useListState = ({
 } = {}) => {
   const checkItemHasKey = item =>
     !item.key ? throwError('List item must have a key value') : item;
-  const [listState, setState] = useStateDep(initialValue.map(checkItemHasKey));
+  const [objectListState, setObjectState] = useStateDep(initialValue.map(checkItemHasKey).reduce(reduceArrayToObject, {}));
+  const [ listState, setListState ] = useStateDep(Object.values(objectListState));
 
-  const itemInStateForKey = keyToCheck =>
-    listState.some(({ key }) => key === keyToCheck);
+  const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
   const checkItemIsNotInState = item =>
     itemInStateForKey(item.key)
       ? throwError('An item in state already exists for this key value')
@@ -25,40 +30,48 @@ export const useListState = ({
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
-    setState(prevState => [...prevState, item]);
+    const newState = R.assoc(item.key, item, objectListState);
+    setListState(Object.values(newState));
+    setObjectState(newState);
   };
 
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
-    
-    setState(prevState => {
-      const newState = prevState.filter(({ key }) => item.key !== key);
-      return newState;
-    });
+    const newState = R.omit([item.key], objectListState);
+    setListState(Object.values(newState));
+    setObjectState(newState);
   };
 
-  const toggleListItem = item =>
-    R.ifElse(
-      R.partial(itemInStateForKey, [item.key]),
+  const toggleListItem = R.ifElse(
+      R.pipe(
+        R.prop("key"),
+        itemInStateForKey,
+      ),
       removeListItem,
       addListItem,
-    )(item);
+    );
 
     const clearList = () => {
-      setState([]);
+      setListState([]);
+      setObjectState({});
     };
   
     const mapItem = fn =>
       R.map(({ item }) => fn(item),
         listState,
       );
+
     const updateListItem = item => {
-      setState(prevState => {
-        const indexToReplace = prevState.findIndex(({ key }) => item.key === key);
-        const newState = [...prevState];
-        newState[indexToReplace] = item;
-        return newState;
-      })
+      const newItem = R.merge(objectListState[item.key], item);
+      const newState = R.assoc(item.key, newItem, objectListState);
+      setListState(Object.values(newState));
+      setObjectState(newState);
+    };
+  
+    const setState = (newArray) => {
+      const newState = newArray.reduce(reduceArrayToObject);
+      setListState(Object.values(newState)); 
+      setObjectState(newState);
     };
 
   return {
