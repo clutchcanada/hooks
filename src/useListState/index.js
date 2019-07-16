@@ -2,10 +2,10 @@ import { useState } from 'react';
 import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 
-const reduceArrayToObject = (accumulator, value) => ({
-  ...accumulator,
-  [value.key]: value
-});
+const reduceArrayToObject = (accumulator, value) => {
+  accumulator[value.key] = value;
+  return accumulator;
+};
 
 export const useListState = ({
   initialValue = [],
