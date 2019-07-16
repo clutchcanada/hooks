@@ -21,10 +21,12 @@ export const useListState = ({
     itemInStateForKey(item.key)
       ? throwError('An item in state already exists for this key value')
       : item;
-  const checkItemIsInState = item =>
-    !itemInStateForKey(item.key)
-      ? throwError('No item in state with this key')
-      : item;
+  const checkKeyIsInState = (key) => !itemInStateForKey(key)
+      && throwError('No item in state with this key');
+  const checkItemIsInState = item => {
+    checkKeyIsInState(item.key);
+    return item;
+  };
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
@@ -41,31 +43,35 @@ export const useListState = ({
   };
 
   const toggleListItem = R.ifElse(
-      R.pipe(
-        R.prop("key"),
-        itemInStateForKey,
-      ),
-      removeListItem,
-      addListItem,
-    );
+    R.pipe(
+      R.prop("key"),
+      itemInStateForKey,
+    ),
+    removeListItem,
+    addListItem,
+  );
 
-    const clearList = () => {
-      setListState([]);
-      setObjectState({});
-    };
+  const clearList = () => {
+    setListState([]);
+    setObjectState({});
+  };
 
-    const updateListItem = item => {
-      const newItem = R.mergeDeepRight(objectListState[item.key], item);
-      objectListState[item.key] = newItem;
-      setListState(Object.values(objectListState));
-      setObjectState(objectListState);
-    };
-  
-    const setState = (newArray) => {
-      const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
-      setListState(Object.values(newState)); 
-      setObjectState(newState);
-    };
+  const updateListItem = item => {
+    const newItem = R.mergeDeepRight(objectListState[item.key], item);
+    objectListState[item.key] = newItem;
+    setListState(Object.values(objectListState));
+    setObjectState(objectListState);
+  };
+
+  const setState = (newArray) => {
+    const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
+    setListState(Object.values(newState)); 
+    setObjectState(newState);
+  };
+
+  const getItemForKey = (key) => ({
+    ...objectListState[key]
+  });
 
   return {
     listState,
@@ -87,6 +93,10 @@ export const useListState = ({
       checkItemHasKey,
       checkItemIsInState,
       updateListItem
+    ),
+    getItemForKey: R.pipe(
+      R.tap(checkKeyIsInState),
+      getItemForKey,
     ),
     itemInStateForKey,
     setState,

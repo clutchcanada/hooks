@@ -295,7 +295,32 @@ describe('useBooleanState Hook', () => {
       };
 
       expect(attemptedUpdate).toThrowError();
-    })
-    
+    });
+  });
+
+  describe('getItemForKey', () => {
+    it('should throw an error if key is not in state', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { getItemForKey } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+      const attemptedGet = () => {
+        getItemForKey("test");
+      };
+
+      expect(attemptedGet).toThrowError();
+    });
+
+    it('should return the item if it exists', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      const { getItemForKey } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+      });
+      const retrievedItem = getItemForKey(keys[0].key);
+
+      expect(retrievedItem).toEqual(keys[0]);
+    });
   });
 });
