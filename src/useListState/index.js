@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
-
-const reduceArrayToObject = (accumulator, value) => {
-  accumulator[value.key] = value;
-  return accumulator;
-};
+import { throwErrorIfKeyIsNil, reduceArrayToObject } from "./utils";
 
 export const useListState = ({
   initialValue = [],
@@ -13,8 +9,10 @@ export const useListState = ({
   removeListItemSideEffects = [],
   useStateDep = useState,
 } = {}) => {
-  const checkItemHasKey = item =>
-    !item.key ? throwError('List item must have a key value') : item;
+  const checkItemHasKey = item => {
+    throwErrorIfKeyIsNil(item.key);
+    return item;
+  };
   const [objectListState, setObjectState] = useStateDep(initialValue.map(checkItemHasKey).reduce(reduceArrayToObject, {}));
   const [ listState, setListState ] = useStateDep(Object.values(objectListState));
 
