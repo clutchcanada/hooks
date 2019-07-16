@@ -17,14 +17,14 @@ export const useListState = ({
   const [ listState, setListState ] = useStateDep(Object.values(objectListState));
 
   const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
-  const checkItemIsNotInState = item =>
+  const throwIfItemIsInState = item =>
     itemInStateForKey(item.key)
       ? throwError('An item in state already exists for this key value')
       : item;
-  const checkKeyIsInState = (key) => !itemInStateForKey(key)
+  const throwIfKeyIsNotInState = (key) => !itemInStateForKey(key)
       && throwError('No item in state with this key');
-  const checkItemIsInState = item => {
-    checkKeyIsInState(item.key);
+  const throwIfItemIsNotInState = item => {
+    throwIfKeyIsNotInState(item.key);
     return item;
   };
 
@@ -77,12 +77,12 @@ export const useListState = ({
     listState,
     addListItem: R.compose(
       addListItem,
-      checkItemIsNotInState,
+      throwIfItemIsInState,
       checkItemHasKey,
     ),
     removeListItem: R.compose(
       removeListItem,
-      checkItemIsInState,
+      throwIfItemIsNotInState,
       checkItemHasKey,
     ),
     toggleListItem: R.compose(
@@ -91,11 +91,11 @@ export const useListState = ({
     ),
     updateListItem: R.pipe(
       checkItemHasKey,
-      checkItemIsInState,
+      throwIfItemIsNotInState,
       updateListItem
     ),
     getItemForKey: R.pipe(
-      R.tap(checkKeyIsInState),
+      R.tap(throwIfKeyIsNotInState),
       getItemForKey,
     ),
     itemInStateForKey,
