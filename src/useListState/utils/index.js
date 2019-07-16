@@ -1,2 +1,2 @@
-export { default as reduceArrayToObject } from "./reduceArrayToObject";
+export { default as reduceToObjectWithKeyCheck } from "./reduceToObjectWithKeyCheck";
 export { default as throwErrorIfKeyIsNil } from "./throwErrorIfKeyIsNil";
