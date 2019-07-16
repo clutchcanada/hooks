@@ -17,14 +17,16 @@ export const useListState = ({
   const [ listState, setListState ] = useStateDep(Object.values(objectListState));
 
   const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
-  const checkItemIsNotInState = item =>
+  const throwIfItemIsInState = item =>
     itemInStateForKey(item.key)
       ? throwError('An item in state already exists for this key value')
       : item;
-  const checkItemIsInState = item =>
-    !itemInStateForKey(item.key)
-      ? throwError('No item in state with this key')
-      : item;
+  const throwIfKeyIsNotInState = (key) => !itemInStateForKey(key)
+      && throwError('No item in state with this key');
+  const throwIfItemIsNotInState = item => {
+    throwIfKeyIsNotInState(item.key);
+    return item;
+  };
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
@@ -41,42 +43,46 @@ export const useListState = ({
   };
 
   const toggleListItem = R.ifElse(
-      R.pipe(
-        R.prop("key"),
-        itemInStateForKey,
-      ),
-      removeListItem,
-      addListItem,
-    );
+    R.pipe(
+      R.prop("key"),
+      itemInStateForKey,
+    ),
+    removeListItem,
+    addListItem,
+  );
 
-    const clearList = () => {
-      setListState([]);
-      setObjectState({});
-    };
+  const clearList = () => {
+    setListState([]);
+    setObjectState({});
+  };
 
-    const updateListItem = item => {
-      const newItem = R.mergeDeepRight(objectListState[item.key], item);
-      objectListState[item.key] = newItem;
-      setListState(Object.values(objectListState));
-      setObjectState(objectListState);
-    };
-  
-    const setState = (newArray) => {
-      const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
-      setListState(Object.values(newState)); 
-      setObjectState(newState);
-    };
+  const updateListItem = item => {
+    const newItem = R.mergeDeepRight(objectListState[item.key], item);
+    objectListState[item.key] = newItem;
+    setListState(Object.values(objectListState));
+    setObjectState(objectListState);
+  };
+
+  const setState = (newArray) => {
+    const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
+    setListState(Object.values(newState)); 
+    setObjectState(newState);
+  };
+
+  const getItemForKey = (key) => ({
+    ...objectListState[key]
+  });
 
   return {
     listState,
     addListItem: R.compose(
       addListItem,
-      checkItemIsNotInState,
+      throwIfItemIsInState,
       checkItemHasKey,
     ),
     removeListItem: R.compose(
       removeListItem,
-      checkItemIsInState,
+      throwIfItemIsNotInState,
       checkItemHasKey,
     ),
     toggleListItem: R.compose(
@@ -85,8 +91,12 @@ export const useListState = ({
     ),
     updateListItem: R.pipe(
       checkItemHasKey,
-      checkItemIsInState,
+      throwIfItemIsNotInState,
       updateListItem
+    ),
+    getItemForKey: R.pipe(
+      R.tap(throwIfKeyIsNotInState),
+      getItemForKey,
     ),
     itemInStateForKey,
     setState,
