@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
-import { throwErrorIfKeyIsNil, reduceToObjectWithKeyCheck } from "./utils";
+import * as useListStateUtils from "./utils";
 
 export const useListState = ({
   initialValue = [],
@@ -10,10 +10,10 @@ export const useListState = ({
   useStateDep = useState,
 } = {}) => {
   const checkItemHasKey = item => {
-    throwErrorIfKeyIsNil(item.key);
+    useListStateUtils.throwErrorIfKeyIsNil(item.key);
     return item;
   };
-  const [objectListState, setObjectState] = useStateDep(initialValue.reduce(reduceToObjectWithKeyCheck, {}));
+  const [objectListState, setObjectState] = useStateDep(useListStateUtils.arrayToObjectIfKeyExists(initialValue));
   const [ listState, setListState ] = useStateDep(Object.values(objectListState));
 
   const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
@@ -62,7 +62,7 @@ export const useListState = ({
     };
   
     const setState = (newArray) => {
-      const newState = newArray.reduce(reduceToObjectWithKeyCheck, {});
+      const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
       setListState(Object.values(newState)); 
       setObjectState(newState);
     };
