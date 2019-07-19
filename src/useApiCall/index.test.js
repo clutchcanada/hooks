@@ -110,4 +110,24 @@ describe("useApiCall", () => {
     };
     test();
   });
+
+  it('should call onSuccess on success', (done) => {
+    const useStateMock = global.useStateMock();
+    const fakeResponse  = { data: "hi" };
+    const mockApiCall = jest.fn(() => Promise.resolve(fakeResponse));
+    const mockOnSuccess = jest.fn();
+    const apiCallState  = useApiCall({
+      apiCallFn: mockApiCall,
+      useStateDep: useStateMock,
+      onSuccess: mockOnSuccess,
+    });
+
+    const test = async () => {
+      await apiCallState.makeCall("test");
+      expect(mockOnSuccess).toBeCalledWith(fakeResponse.data);
+      done();
+    };
+    test();
+  });
+  
 });

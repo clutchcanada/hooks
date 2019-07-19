@@ -6,6 +6,7 @@ import * as R from 'ramda';
 const useApiCall = ({
   apiCallFn,
   onError = (error) => { throw error },
+  onSuccess = () => {},
   useStateDep = useState,
 } = {}) => {
   R.isNil(apiCallFn) && throwError("No api call fn specified in useApiCall");
@@ -16,7 +17,9 @@ const useApiCall = ({
       isLoadingState.setTrue();
       const response = await apiCallFn(...args);
       isLoadingState.setFalse();
-      return R.prop('data', response);
+      const data = R.prop('data', response);
+      onSuccess(data);
+      return data;
     } catch (error) {
       isLoadingState.setFalse();
       onError(error);
