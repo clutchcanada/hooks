@@ -1,6 +1,6 @@
 {
   "name": "@clutch/hooks",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "scripts": {
     "build": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist --ignore 'src/**/*.test.js'",
     "build:test": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist",
@@ -16,14 +16,15 @@
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/polyfill": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-react": "^7.0.0",
     "enzyme": "3.10.0",
     "enzyme-adapter-react-16": "1.14.0",
     "jest": "^24.7.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react": "^16.8.6"
   },
   "dependencies": {
     "@clutch/helpers": "^1.0.0",
