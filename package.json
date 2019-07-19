@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@clutch/helpers": "^1.0.0",
+    "babel-polyfill": "^6.26.0",
     "ramda": "^0.26.1",
     "uuid": "^3.3.2"
   },

@@ -1,5 +1,6 @@
 import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
+import 'babel-polyfill';
 import { useStateMock } from './common';
 
 configure({ adapter: new Adapter() });
