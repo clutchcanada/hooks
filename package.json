@@ -1,6 +1,6 @@
 {
   "name": "@clutch/hooks",
-  "version": "1.5.7",
+  "version": "1.6.0",
   "scripts": {
     "build": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist --ignore 'src/**/*.test.js'",
     "build:test": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist",
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@clutch/helpers": "^1.0.0",
+    "babel-polyfill": "^6.26.0",
     "ramda": "^0.26.1",
     "uuid": "^3.3.2"
   },
