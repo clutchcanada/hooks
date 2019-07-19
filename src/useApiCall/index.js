@@ -22,7 +22,6 @@ const useApiCall = ({
       onError(error);
       return null;
     }
-
   };
 
   return {
