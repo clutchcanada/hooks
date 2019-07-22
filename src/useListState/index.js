@@ -43,7 +43,9 @@ export const useListState = ({
     setState(prevState => {
       prevState.object[item.key] = item;
       prevState.list = Object.values(prevState.object);
-      return prevState;
+      return {
+        ...prevState
+      };
     });
   };
 
@@ -52,7 +54,9 @@ export const useListState = ({
     setState(prevState => {
       delete prevState.object[item.key];
       prevState.list = Object.values(prevState.object);
-      return prevState;
+      return {
+        ...prevState
+      };
     });
   };
 
@@ -78,7 +82,9 @@ export const useListState = ({
       const newItem = R.mergeDeepRight(prevState[item.key], item);
       prevState.object[item.key] = newItem;
       prevState.list = Object.values(prevState.object);
-      return prevState;
+      return {
+        ...prevState
+      };
     });
   };
 
