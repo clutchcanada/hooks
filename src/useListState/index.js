@@ -9,13 +9,14 @@ export const useListState = ({
   addListItemSideEffects = [],
   removeListItemSideEffects = [],
   updateListItemSideEffects = [],
+  uniqueKey = "key",
   useStateDep = useState,
 } = {}) => {
   const checkItemHasKey = item => {
-    useListStateUtils.throwErrorIfKeyIsNil(item.key);
+    useListStateUtils.throwErrorIfKeyIsNil(item[uniqueKey]);
     return item;
   };
-  const initialObjectState = useListStateUtils.arrayToObjectIfKeyExists(initialValue);
+  const initialObjectState = useListStateUtils.arrayToObjectIfKeyExists(initialValue, uniqueKey);
   const [{
     list: listState,
     object: objectListState,
@@ -27,13 +28,13 @@ export const useListState = ({
 
   const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
   const throwIfItemIsInState = item =>
-    itemInStateForKey(item.key)
+    itemInStateForKey(item[uniqueKey])
       ? throwError('An item in state already exists for this key value')
       : item;
   const throwIfKeyIsNotInState = (key) => !itemInStateForKey(key)
       && throwError('No item in state with this key');
   const throwIfItemIsNotInState = item => {
-    throwIfKeyIsNotInState(item.key);
+    throwIfKeyIsNotInState(item[uniqueKey]);
     return item;
   };
 
@@ -41,7 +42,7 @@ export const useListState = ({
     addListItemSideEffects.forEach(R.applyTo(item));
     
     setState(prevState => {
-      prevState.object[item.key] = item;
+      prevState.object[item[uniqueKey]] = item;
       prevState.list = Object.values(prevState.object);
       return {
         ...prevState
@@ -52,7 +53,7 @@ export const useListState = ({
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
     setState(prevState => {
-      delete prevState.object[item.key];
+      delete prevState.object[item[uniqueKey]];
       prevState.list = Object.values(prevState.object);
       return {
         ...prevState
@@ -62,7 +63,7 @@ export const useListState = ({
 
   const toggleListItem = R.ifElse(
     R.pipe(
-      R.prop("key"),
+      R.prop(uniqueKey),
       itemInStateForKey,
     ),
     removeListItem,
@@ -79,8 +80,8 @@ export const useListState = ({
   const updateListItem = item => {
     updateListItemSideEffects.forEach(R.applyTo(item));
     setState(prevState => {
-      const newItem = R.mergeDeepRight(prevState[item.key], item);
-      prevState.object[item.key] = newItem;
+      const newItem = R.mergeDeepRight(prevState[item[uniqueKey]], item);
+      prevState.object[item[uniqueKey]] = newItem;
       prevState.list = Object.values(prevState.object);
       return {
         ...prevState
@@ -89,7 +90,7 @@ export const useListState = ({
   };
 
   const publicSetState = (newArray) => {
-    const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
+    const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray, uniqueKey);
     setState(prevState => {
       prevState.object = newState;
       prevState.list = Object.values(newState)

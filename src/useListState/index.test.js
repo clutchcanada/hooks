@@ -17,7 +17,7 @@ describe('useListState Hook', () => {
 
       expect(useStateMock.mock.calls[0][0]).toEqual({
         list: keys,
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
       });
     });
 
@@ -34,6 +34,18 @@ describe('useListState Hook', () => {
       const { listState } = useListState({
         initialValue: keys,
         useStateDep: useStateMock,
+      });
+
+      expect(listState).toEqual(keys);
+    });
+
+
+    it('should be able to specify a different unique key', () => {
+      const keys = [{ id: 1, value: 'hey' }, { id: 2, value: 'buddy' }];
+      const { listState } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+        uniqueKey: "id"
       });
 
       expect(listState).toEqual(keys);
@@ -78,7 +90,7 @@ describe('useListState Hook', () => {
       const testItem = { item: 'yoyo', key: 'helpMe' };
       addListItem(testItem);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual([...keys, testItem]);
@@ -136,7 +148,7 @@ describe('useListState Hook', () => {
       });
       removeListItem(keys[0]);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual([keys[1]]);
@@ -197,7 +209,7 @@ describe('useListState Hook', () => {
       };
       updateListItem(updatedValue);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual([updatedValue, keys[1]]);
@@ -227,7 +239,7 @@ describe('useListState Hook', () => {
       });
       toggleListItem(keys[0]);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual([keys[1]]);
@@ -242,7 +254,7 @@ describe('useListState Hook', () => {
       const testItem = { item: 'yoyo', key: 'helpMe' };
       toggleListItem(testItem);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual([...keys, testItem]);
@@ -300,10 +312,11 @@ describe('useListState Hook', () => {
         initialValue: keys,
         useStateDep: useStateMock,
       });
+
       const newData = ['yolo', 'swaggins'].map(addKey);
       setState(newData);
       const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys),
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
         list: keys
       });
       expect(setStateCallResults.list).toEqual(newData);
@@ -348,5 +361,5 @@ describe('useListState Hook', () => {
 
       expect(retrievedItem).toEqual(keys[0]);
     });
-  });
+  });  
 });
