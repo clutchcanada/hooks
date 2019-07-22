@@ -3,7 +3,6 @@ import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 import * as useListStateUtils from "./utils";
 
-
 export const useListState = ({
   initialValue = [],
   addListItemSideEffects = [],

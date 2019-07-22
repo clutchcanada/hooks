@@ -39,7 +39,6 @@ describe('useListState Hook', () => {
       expect(listState).toEqual(keys);
     });
 
-
     it('should be able to specify a different unique key', () => {
       const keys = [{ id: 1, value: 'hey' }, { id: 2, value: 'buddy' }];
       const { listState } = useListState({
