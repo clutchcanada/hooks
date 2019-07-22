@@ -3,18 +3,27 @@ import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 import * as useListStateUtils from "./utils";
 
+
 export const useListState = ({
   initialValue = [],
   addListItemSideEffects = [],
   removeListItemSideEffects = [],
+  updateListItemSideEffects = [],
   useStateDep = useState,
 } = {}) => {
   const checkItemHasKey = item => {
     useListStateUtils.throwErrorIfKeyIsNil(item.key);
     return item;
   };
-  const [objectListState, setObjectState] = useStateDep(useListStateUtils.arrayToObjectIfKeyExists(initialValue));
-  const [ listState, setListState ] = useStateDep(Object.values(objectListState));
+  const initialObjectState = useListStateUtils.arrayToObjectIfKeyExists(initialValue);
+  const [{
+    list: listState,
+    object: objectListState,
+  }, setState] = useStateDep({
+    list: Object.values(initialObjectState),
+    object: initialObjectState,
+  });
+
 
   const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
   const throwIfItemIsInState = item =>
@@ -30,16 +39,21 @@ export const useListState = ({
 
   const addListItem = item => {
     addListItemSideEffects.forEach(R.applyTo(item));
-    objectListState[item.key] = item;
-    setListState(Object.values(objectListState));
-    setObjectState(objectListState);
+    
+    setState(prevState => {
+      prevState.object[item.key] = item;
+      prevState.list = Object.values(prevState.object);
+      return prevState;
+    });
   };
 
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
-    delete objectListState[item.key];
-    setListState(Object.values(objectListState));
-    setObjectState(objectListState);
+    setState(prevState => {
+      delete prevState.object[item.key];
+      prevState.list = Object.values(prevState.object);
+      return prevState;
+    });
   };
 
   const toggleListItem = R.ifElse(
@@ -52,21 +66,29 @@ export const useListState = ({
   );
 
   const clearList = () => {
-    setListState([]);
-    setObjectState({});
+    setState({
+      list: [],
+      object: {},
+    });
   };
 
   const updateListItem = item => {
-    const newItem = R.mergeDeepRight(objectListState[item.key], item);
-    objectListState[item.key] = newItem;
-    setListState(Object.values(objectListState));
-    setObjectState(objectListState);
+    updateListItemSideEffects.forEach(R.applyTo(item));
+    setState(prevState => {
+      const newItem = R.mergeDeepRight(prevState[item.key], item);
+      prevState.object[item.key] = newItem;
+      prevState.list = Object.values(prevState.object);
+      return prevState;
+    });
   };
 
-  const setState = (newArray) => {
+  const publicSetState = (newArray) => {
     const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray);
-    setListState(Object.values(newState)); 
-    setObjectState(newState);
+    setState(prevState => {
+      prevState.object = newState;
+      prevState.list = Object.values(newState)
+      return prevState;
+    });
   };
 
   const getItemForKey = (key) => ({
@@ -99,7 +121,7 @@ export const useListState = ({
       getItemForKey,
     ),
     itemInStateForKey,
-    setState,
+    setState: publicSetState,
     clearList,
   };
 };
