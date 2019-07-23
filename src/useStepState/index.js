@@ -3,12 +3,12 @@ import { throwError } from '@clutch/helpers';
 
 export const useStepState = ({
   steps = [],
-  currentStepIndex = 0,
+  initialStepIndex = 0,
   useStateDep = useState,
   useEffectDep = useEffect,
 }) => {
-  const [currentStepIndexState, setCurrentStepIndexState] = useStateDep(currentStepIndex);
-  const [currentStepState, setCurrentStepState] = useStateDep(steps[currentStepIndex]);
+  const [currentStepIndexState, setCurrentStepIndexState] = useStateDep(initialStepIndex);
+  const [currentStepState, setCurrentStepState] = useStateDep(steps[initialStepIndex]);
 
   useEffectDep(() => {
     steps[currentStepIndexState]
@@ -28,11 +28,16 @@ export const useStepState = ({
     setCurrentStepIndexState(0);
   };
 
+  const goToStep = (stepIndex) => {
+    setCurrentStepIndexState(stepIndex);
+  }
+
   return {
     currentStep: currentStepState,
     nextStep,
     previousStep,
     resetSteps,
+    goToStep
   };
 };
 
