@@ -10,6 +10,8 @@ export const useStepState = ({
   const [currentStepIndexState, setCurrentStepIndexState] = useStateDep(initialStepIndex);
   const [currentStepState, setCurrentStepState] = useStateDep(steps[initialStepIndex]);
 
+  !steps[currentStepIndexState] && throwError('You are trying to go to a step that does not exist');
+
   useEffectDep(() => {
     steps[currentStepIndexState]
       ? setCurrentStepState(steps[currentStepIndexState])
@@ -17,11 +19,11 @@ export const useStepState = ({
   }, [currentStepIndexState]);
 
   const nextStep = () => {
-    setCurrentStepIndexState(currentStepIndexState + 1);
+    setCurrentStepIndexState(prevState => prevState + 1);
   };
 
   const previousStep = () => {
-    setCurrentStepIndexState(currentStepIndexState - 1);
+    setCurrentStepIndexState(prevState => prevState - 1);
   };
 
   const resetSteps = () => {
