@@ -10,8 +10,9 @@ describe('useStepState Hook', () => {
     });
 
     describe('Initialisation', () => {
+        const steps = ['step1', 'step2'];
+
         it('should return the first step by default via the step state prop', () => {
-            const steps = ['step1', 'step2'];
             const { currentStep } = useStepState({
               steps,
               useStateDep: useStateMock,
@@ -19,6 +20,30 @@ describe('useStepState Hook', () => {
             });
       
             expect(currentStep).toEqual(steps[0]);
+          });
+          
+          it('should return the correct step if you try to go to a step that exists', () => {
+              const { currentStep, nextStep } = useStepState({
+                steps,
+                initialStepIndex: 1,     
+                useStateDep: useStateMock,
+                useEffectDep: (fn) => fn(),
+              });
+      
+              expect(currentStep).toEqual(steps[1]);
+          });
+
+          it('should throw an error if you try to go to a step that doesnt exist', () => {
+            const test = () => {
+              const { currentStep, nextStep } = useStepState({
+                steps,
+                initialStepIndex: 5,            
+                useStateDep: useStateMock,
+                useEffectDep: (fn) => fn(),
+              });
+            };
+      
+            expect(test).toThrowError();
           });
     });
 });
