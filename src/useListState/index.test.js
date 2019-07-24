@@ -1,5 +1,4 @@
 import { addKey } from '@clutch/helpers';
-import * as R from "ramda";
 import useListState from './index';
 import * as useListStateUtils from "./utils";
 
@@ -82,17 +81,18 @@ describe('useListState Hook', () => {
 
     it('should call setState with current listState and new item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { addListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        })
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
-      addListItem(testItem);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      global.act(() => {
+        listState.addListItem(testItem);
       });
-      expect(setStateCallResults.list).toEqual([...keys, testItem]);
+
+      expect(listState.listState).toEqual([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -141,16 +141,16 @@ describe('useListState Hook', () => {
 
     it('should call setState with current listState minus passed item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { removeListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-      removeListItem(keys[0]);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      global.act(() => {
+        listState.removeListItem(keys[0]);
       });
-      expect(setStateCallResults.list).toEqual([keys[1]]);
+      expect(listState.listState).toEqual([keys[1]]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -190,7 +190,7 @@ describe('useListState Hook', () => {
       });
 
       const test = () => {
-        updateListItem({ item: 'hey' });
+        updateListItem({ item: 'hey' }); 
       };
 
       expect(test).toThrowError();
@@ -198,20 +198,21 @@ describe('useListState Hook', () => {
 
     it('should call setState with current listState and the updated item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { updateListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
+      
       const updatedValue = {
         ...keys[0],
         item: "yolo"
       };
-      updateListItem(updatedValue);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      global.act(() => {
+        listState.updateListItem(updatedValue);
       });
-      expect(setStateCallResults.list).toEqual([updatedValue, keys[1]]);
+      expect(listState.listState).toEqual([updatedValue, keys[1]]);
     });
   });
 
@@ -232,31 +233,31 @@ describe('useListState Hook', () => {
 
     it('should call setState with current listState minus item if item is in state', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { toggleListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-      toggleListItem(keys[0]);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      global.act(() => {
+        listState.toggleListItem(keys[0]);
       });
-      expect(setStateCallResults.list).toEqual([keys[1]]);
+      expect(listState.listState).toEqual([keys[1]]);
     });
 
     it('should call setState with current listState plus item if item is not in state', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { toggleListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
-      });
       const testItem = { item: 'yoyo', key: 'helpMe' };
-      toggleListItem(testItem);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-      expect(setStateCallResults.list).toEqual([...keys, testItem]);
+      global.act(() => {
+        listState.toggleListItem(testItem);
+      });
+      expect(listState.listState).toEqual([...keys, testItem]);
     });
 
     it('should fire any removeListItemSideEffects passed if item is in state', () => {
@@ -307,18 +308,18 @@ describe('useListState Hook', () => {
   describe("setState", () => {
     it('should call setStateMock with new array', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { setState } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      const newData = ['yolo', 'swaggins'].map(addKey);
+      global.act(() => {
+        listState.setState(newData);
       });
 
-      const newData = ['yolo', 'swaggins'].map(addKey);
-      setState(newData);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
-      });
-      expect(setStateCallResults.list).toEqual(newData);
+      expect(listState.listState).toEqual(newData);
     }); 
     
     it('should throw an error if items do not have keys', () => {
