@@ -93,7 +93,7 @@ export const useListState = ({
     setState(prevState => {
       prevState.object = newState;
       prevState.list = Object.values(newState)
-      return prevState;
+      return { ...prevState };
     });
   };
 
