@@ -1,5 +1,4 @@
 import { addKey } from '@clutch/helpers';
-import * as R from "ramda";
 import useListState from './index';
 import * as useListStateUtils from "./utils";
 
@@ -82,17 +81,18 @@ describe('useListState Hook', () => {
 
     it('should call setState with current listState and new item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { addListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
-      addListItem(testItem);
-      const setStateCallResults = setStateMock.mock.calls[0][0]({
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
-        list: keys
+      global.act(() => {
+        listState.addListItem(testItem);
       });
-      expect(setStateCallResults.list).toEqual([...keys, testItem]);
+
+      expect(listState.listState).toEqual([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -190,7 +190,7 @@ describe('useListState Hook', () => {
       });
 
       const test = () => {
-        updateListItem({ item: 'hey' });
+        updateListItem({ item: 'hey' }); 
       };
 
       expect(test).toThrowError();

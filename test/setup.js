@@ -1,7 +1,8 @@
 import { configure, shallow } from 'enzyme';
+import { act } from "react-dom/test-utils";
 import Adapter from 'enzyme-adapter-react-16';
 import 'babel-polyfill';
-import { useStateMock } from './common';
+import { useStateMock, testHook } from './common';
 
 configure({ adapter: new Adapter() });
 
@@ -24,3 +25,5 @@ global.mountWithTheme = ({ tree, theme = defaultTheme, mounter = shallow }) =>
     theme,
   });
 global.useStateMock = useStateMock;
+global.testHook = testHook;
+global.act = act;
