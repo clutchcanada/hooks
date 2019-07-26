@@ -124,7 +124,7 @@ describe("useApiCall", () => {
 
     const test = async () => {
       await apiCallState.makeCall("test");
-      expect(mockOnSuccess).toBeCalledWith(fakeResponse.data);
+      expect(mockOnSuccess).toBeCalledWith(fakeResponse);
       done();
     };
     test();

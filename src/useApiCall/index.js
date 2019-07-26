@@ -17,9 +17,8 @@ const useApiCall = ({
       isLoadingState.setTrue();
       const response = await apiCallFn(...args);
       isLoadingState.setFalse();
-      const data = R.prop('data', response);
-      onSuccess(data);
-      return data;
+      onSuccess(response);
+      return response;
     } catch (error) {
       isLoadingState.setFalse();
       onError(error);

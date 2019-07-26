@@ -1,9 +1,8 @@
 import { addKey } from '@clutch/helpers';
-import * as R from "ramda";
 import useListState from './index';
+import * as useListStateUtils from "./utils";
 
-
-describe('useBooleanState Hook', () => {
+describe('useListState Hook', () => {
   const setStateMock = jest.fn();
   const useStateMock = global.useStateMock({ setStateMock });
   beforeEach(() => {
@@ -15,7 +14,10 @@ describe('useBooleanState Hook', () => {
       const keys = ['hey', 'buddy'].map(addKey);
       useListState({ initialValue: keys, useStateDep: useStateMock });
 
-      expect(useStateMock).toBeCalledWith(keys);
+      expect(useStateMock.mock.calls[0][0]).toEqual({
+        list: keys,
+        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
+      });
     });
 
     it('should throw an error if the initial state items do not have a key', () => {
@@ -31,6 +33,17 @@ describe('useBooleanState Hook', () => {
       const { listState } = useListState({
         initialValue: keys,
         useStateDep: useStateMock,
+      });
+
+      expect(listState).toEqual(keys);
+    });
+
+    it('should be able to specify a different unique key', () => {
+      const keys = [{ id: 1, value: 'hey' }, { id: 2, value: 'buddy' }];
+      const { listState } = useListState({
+        initialValue: keys,
+        useStateDep: useStateMock,
+        uniqueKey: "id"
       });
 
       expect(listState).toEqual(keys);
@@ -68,13 +81,18 @@ describe('useBooleanState Hook', () => {
 
     it('should call setState with current listState and new item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { addListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        })
       });
       const testItem = { item: 'yoyo', key: 'helpMe' };
-      addListItem(testItem);
-      expect(setStateMock).toBeCalledWith([...keys, testItem]);
+      global.act(() => {
+        listState.addListItem(testItem);
+      });
+
+      expect(listState.listState).toEqual([...keys, testItem]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -123,12 +141,16 @@ describe('useBooleanState Hook', () => {
 
     it('should call setState with current listState minus passed item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { removeListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-      removeListItem(keys[0]);
-      expect(setStateMock).toBeCalledWith([keys[1]]);
+      global.act(() => {
+        listState.removeListItem(keys[0]);
+      });
+      expect(listState.listState).toEqual([keys[1]]);
     });
 
     it('should fire any sideEffects passed', () => {
@@ -168,7 +190,7 @@ describe('useBooleanState Hook', () => {
       });
 
       const test = () => {
-        updateListItem({ item: 'hey' });
+        updateListItem({ item: 'hey' }); 
       };
 
       expect(test).toThrowError();
@@ -176,17 +198,21 @@ describe('useBooleanState Hook', () => {
 
     it('should call setState with current listState and the updated item', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { updateListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
+      
       const updatedValue = {
         ...keys[0],
         item: "yolo"
       };
-      updateListItem(updatedValue);
-      const calledWith = setStateMock.mock.calls[0][0];
-      expect(calledWith).toEqual([updatedValue, keys[1]]);
+      global.act(() => {
+        listState.updateListItem(updatedValue);
+      });
+      expect(listState.listState).toEqual([updatedValue, keys[1]]);
     });
   });
 
@@ -207,25 +233,31 @@ describe('useBooleanState Hook', () => {
 
     it('should call setState with current listState minus item if item is in state', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { toggleListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-      toggleListItem(keys[0]);
-      const calledWith = setStateMock.mock.calls[0][0];
-      expect(calledWith).toEqual([keys[1]]);
+      global.act(() => {
+        listState.toggleListItem(keys[0]);
+      });
+      expect(listState.listState).toEqual([keys[1]]);
     });
 
     it('should call setState with current listState plus item if item is not in state', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { toggleListItem } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
-      });
       const testItem = { item: 'yoyo', key: 'helpMe' };
-      toggleListItem(testItem);
-      const calledWith = setStateMock.mock.calls[0][0];
-      expect(calledWith).toEqual([...keys, testItem]);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.toggleListItem(testItem);
+      });
+      expect(listState.listState).toEqual([...keys, testItem]);
     });
 
     it('should fire any removeListItemSideEffects passed if item is in state', () => {
@@ -266,21 +298,28 @@ describe('useBooleanState Hook', () => {
 
       clearList();
 
-      expect(setStateMock).toBeCalledWith([]);
+      expect(setStateMock).toBeCalledWith({
+        object: {},
+        list: []
+      });
     });
   });
 
   describe("setState", () => {
     it('should call setStateMock with new array', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { setState } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
       const newData = ['yolo', 'swaggins'].map(addKey);
-      setState(newData);
+      global.act(() => {
+        listState.setState(newData);
+      });
 
-      expect(setStateMock).toBeCalledWith(newData);
+      expect(listState.listState).toEqual(newData);
     }); 
     
     it('should throw an error if items do not have keys', () => {
@@ -322,5 +361,5 @@ describe('useBooleanState Hook', () => {
 
       expect(retrievedItem).toEqual(keys[0]);
     });
-  });
+  });  
 });
