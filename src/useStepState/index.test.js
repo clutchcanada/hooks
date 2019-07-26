@@ -46,4 +46,54 @@ describe('useStepState Hook', () => {
             expect(test).toThrowError();
           });
     });
+
+    describe('nextStep', () => {
+      const steps = ['step1', 'step2'];
+
+      it('should call setState with nextStep when nextStep is called', () => {
+          const { currentStep, nextStep } = useStepState({
+            steps,
+            useStateDep: useStateMock,
+            useEffectDep: (fn) => fn(),
+          });
+          nextStep();
+          const setStateCallResult = setStateMock.mock.calls[1][0](0);
+          expect(setStateCallResult).toEqual(1);
+        });
+       
+  });
+
+    describe('previousStep', () => {
+      const steps = ['step1', 'step2', 'step3'];
+
+      it('should call setState with nextStep when previousStep is called', () => {
+        const { currentStep, previousStep } = useStepState({
+          steps,
+          initialStepIndex: 2,
+          useStateDep: useStateMock,
+          useEffectDep: (fn) => fn(),
+        });
+        previousStep();
+        const setStateCallResult = setStateMock.mock.calls[1][0](2);
+        expect(setStateCallResult).toEqual(1);
+      });
+     
+  });
+
+  describe('resetSteps', () => {
+    const steps = ['step1', 'step2', 'step3'];
+
+    it('should reset steps to 0 when resetSteps is called', () => {
+      const { currentStep, resetSteps } = useStepState({
+        steps,
+        initialStepIndex: 2,
+        useStateDep: useStateMock,
+        useEffectDep: (fn) => fn(),
+      });
+      resetSteps();
+      const setStateCallResult = setStateMock.mock.calls[1][0];
+      expect(setStateCallResult).toEqual(0);
+    });
+   
+  });
 });

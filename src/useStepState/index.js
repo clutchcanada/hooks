@@ -7,15 +7,15 @@ export const useStepState = ({
   useStateDep = useState,
   useEffectDep = useEffect,
 }) => {
+  !steps[initialStepIndex] && throwError('You are trying to go to a step that does not exist');
+
   const [currentStepIndexState, setCurrentStepIndexState] = useStateDep(initialStepIndex);
   const [currentStepState, setCurrentStepState] = useStateDep(steps[initialStepIndex]);
 
-  !steps[currentStepIndexState] && throwError('You are trying to go to a step that does not exist');
-
   useEffectDep(() => {
     steps[currentStepIndexState]
-      ? setCurrentStepState(steps[currentStepIndexState])
-      : throwError('You are trying to go to a step that does not exist');
+    ? setCurrentStepState(steps[currentStepIndexState])
+    : throwError('You are trying to go to a step that does not exist');
   }, [currentStepIndexState]);
 
   const nextStep = () => {
@@ -39,7 +39,7 @@ export const useStepState = ({
     nextStep,
     previousStep,
     resetSteps,
-    goToStep
+    goToStep,
   };
 };
 
