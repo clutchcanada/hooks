@@ -15,17 +15,17 @@ export const useListState = ({
     useListStateUtils.throwErrorIfKeyIsNil(item[uniqueKey]);
     return item;
   };
-  const initialObjectState = useListStateUtils.arrayToObjectIfKeyExists(initialValue, uniqueKey);
+  const initialHashMapState = useListStateUtils.arrayToObjectIfKeyExists(initialValue, uniqueKey);
   const [{
     list: listState,
-    object: objectListState,
+    hashMap: hashMapState,
   }, setState] = useStateDep({
-    list: Object.values(initialObjectState),
-    object: initialObjectState,
+    list: initialValue,
+    hashMap: initialHashMapState,
   });
 
 
-  const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
+  const itemInStateForKey = keyToCheck => hashMapState[keyToCheck];
   const throwIfItemIsInState = item =>
     itemInStateForKey(item[uniqueKey])
       ? throwError('An item in state already exists for this key value')
@@ -41,8 +41,8 @@ export const useListState = ({
     addListItemSideEffects.forEach(R.applyTo(item));
     
     setState(prevState => {
-      prevState.object[item[uniqueKey]] = item;
-      prevState.list = Object.values(prevState.object);
+      prevState.hashMap[item[uniqueKey]] = item;
+      prevState.list = Object.values(prevState.hashMap);
       return {
         ...prevState
       };
@@ -52,8 +52,8 @@ export const useListState = ({
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
     setState(prevState => {
-      delete prevState.object[item[uniqueKey]];
-      prevState.list = Object.values(prevState.object);
+      delete prevState.hashMap[item[uniqueKey]];
+      prevState.list = Object.values(prevState.hashMap);
       return {
         ...prevState
       };
@@ -72,7 +72,7 @@ export const useListState = ({
   const clearList = () => {
     setState({
       list: [],
-      object: {},
+      hashMap: {},
     });
   };
 
@@ -80,9 +80,9 @@ export const useListState = ({
     updateListItemSideEffects.forEach(R.applyTo(item));
     const key = item[uniqueKey];
     setState(prevState => {
-      const newItem = R.mergeDeepRight(prevState.object[key], item);
-      prevState.object[key] = newItem;
-      prevState.list = Object.values(prevState.object);
+      const newItem = R.mergeDeepRight(prevState.hashMap[key], item);
+      prevState.hashMap[key] = newItem;
+      prevState.list = Object.values(prevState.hashMap);
       return {
         ...prevState
       };
@@ -92,14 +92,14 @@ export const useListState = ({
   const publicSetState = (newArray) => {
     const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray, uniqueKey);
     setState(prevState => {
-      prevState.object = newState;
-      prevState.list = Object.values(newState)
+      prevState.hashMap = newState;
+      prevState.list = newArray;
       return { ...prevState };
     });
   };
 
   const getItemForKey = (key) => ({
-    ...objectListState[key]
+    ...hashMapState[key]
   });
 
   return {
