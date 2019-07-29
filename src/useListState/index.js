@@ -3,33 +3,13 @@ import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 import * as useListStateUtils from "./utils";
 
-function isObject(item) {
-  return (item && typeof item === 'object' && !Array.isArray(item));
-}
 
-export function mergeDeep(target, ...sources) {
-  if (!sources.length) return target;
-  const source = sources.shift();
-
-  if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) Object.assign(target, { [key]: {} });
-        mergeDeep(target[key], source[key]);
-      } else {
-        Object.assign(target, { [key]: source[key] });
-      }
-    }
-  }
-
-  return mergeDeep(target, ...sources);
-}
 
 export const useListState = ({
   initialValue = [],
   addListItemSideEffects = [],
   removeListItemSideEffects = [],
-  updateListItemSideEffects = [],
+  updateListItemSideEffects = [], 
   uniqueKey = "key",
   useStateDep = useState,
 } = {}) => {
@@ -86,7 +66,7 @@ export const useListState = ({
     updateListItemSideEffects.forEach(R.applyTo(item));
     const key = item[uniqueKey];
     setState(prevState => {
-      const newItem = mergeDeep(prevState.hashMap.get(key), item);
+      const newItem = useListStateUtils.deepMerge(prevState.hashMap.get(key), item);
       prevState.hashMap.set(key, newItem);
       return {
         ...prevState
