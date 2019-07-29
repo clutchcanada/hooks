@@ -7,7 +7,7 @@ export const useListState = ({
   initialValue = [],
   addListItemSideEffects = [],
   removeListItemSideEffects = [],
-  updateListItemSideEffects = [], 
+  updateListItemSideEffects = [],
   uniqueKey = "key",
   useStateDep = useState,
 } = {}) => {
