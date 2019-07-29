@@ -7,6 +7,7 @@ const useFormState = ({
   formKeyMap = {},
   defaultValues = {},
   optionalKeys = [],
+  defaultState = {},
   useStateDep = useState,
 } = {}) => {
   const {
@@ -14,10 +15,16 @@ const useFormState = ({
     setTrue: setIsValidatingTrue,
     setFalse: setIsValidatingFalse,
   } = useBooleanState({ useStateDep });
-  const [formState, setFormState] = useStateDep({
-    ...reduceFormKeysToState(formKeyMap),
-    ...defaultValues,
-  });
+  const defaultStateWithValues = Object.entries(defaultValues).reduce((accumulator, [key, value]) => {
+    accumulator[key] = {
+      ...accumulator[key],
+      value,
+    };
+    return accumulator
+  }, defaultState);
+  const [formState, setFormState] = useStateDep(
+      R.mergeDeepRight(reduceFormKeysToState(formKeyMap), defaultStateWithValues)
+    );
 
   const {
     togglePanel: toggleFocusKey,
