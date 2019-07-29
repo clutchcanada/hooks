@@ -196,8 +196,16 @@ describe('useListState Hook', () => {
       expect(test).toThrowError();
     });
 
-    it('should call setState with current listState and the updated item', () => {
-      const keys = ['hey', 'buddy'].map(addKey);
+    it('should call setState with current listState and the updated item merged together', () => {
+      const keys = [{
+        item: "hey",
+        date: new Date(),
+        key: 1
+      }, {
+        item: "buddy",
+        date: new Date(),
+        key: 2
+      }];
       let listState;
       global.testHook(() => {
         listState = useListState({
@@ -206,13 +214,13 @@ describe('useListState Hook', () => {
       });
       
       const updatedValue = {
-        ...keys[0],
-        item: "yolo"
+        item: "yolo",
+        key: 1,
       };
       global.act(() => {
         listState.updateListItem(updatedValue);
       });
-      expect(listState.listState).toEqual([updatedValue, keys[1]]);
+      expect(listState.listState).toEqual([{...keys[0], ...updatedValue}, keys[1]]);
     });
   });
 
