@@ -78,9 +78,10 @@ export const useListState = ({
 
   const updateListItem = item => {
     updateListItemSideEffects.forEach(R.applyTo(item));
+    const key = item[uniqueKey];
     setState(prevState => {
-      const newItem = R.mergeDeepRight(prevState[item[uniqueKey]], item);
-      prevState.object[item[uniqueKey]] = newItem;
+      const newItem = R.mergeDeepRight(prevState.object[key], item);
+      prevState.object[key] = newItem;
       prevState.list = Object.values(prevState.object);
       return {
         ...prevState
