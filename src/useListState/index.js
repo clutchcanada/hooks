@@ -15,17 +15,17 @@ export const useListState = ({
     useListStateUtils.throwErrorIfKeyIsNil(item[uniqueKey]);
     return item;
   };
-  const initialObjectState = useListStateUtils.arrayToObjectIfKeyExists(initialValue, uniqueKey);
+  const initialHashMapState = useListStateUtils.arrayToHashMap(initialValue, uniqueKey);
   const [{
     list: listState,
-    object: objectListState,
+    hashMap: hashMapState,
   }, setState] = useStateDep({
-    list: Object.values(initialObjectState),
-    object: initialObjectState,
+    list: initialValue,
+    hashMap: initialHashMapState,
   });
 
 
-  const itemInStateForKey = keyToCheck => objectListState[keyToCheck];
+  const itemInStateForKey = keyToCheck => hashMapState.has(keyToCheck);
   const throwIfItemIsInState = item =>
     itemInStateForKey(item[uniqueKey])
       ? throwError('An item in state already exists for this key value')
@@ -41,8 +41,8 @@ export const useListState = ({
     addListItemSideEffects.forEach(R.applyTo(item));
     
     setState(prevState => {
-      prevState.object[item[uniqueKey]] = item;
-      prevState.list = Object.values(prevState.object);
+      prevState.hashMap.set(item[uniqueKey],item);
+      prevState.list = [...prevState.hashMap.values()];
       return {
         ...prevState
       };
@@ -52,8 +52,19 @@ export const useListState = ({
   const removeListItem = item => {
     removeListItemSideEffects.forEach(R.applyTo(item));
     setState(prevState => {
-      delete prevState.object[item[uniqueKey]];
-      prevState.list = Object.values(prevState.object);
+      prevState.hashMap.delete(item[uniqueKey]);
+      prevState.list = [...prevState.hashMap.values()];
+      return {
+        ...prevState
+      };
+    });
+  };
+
+  const updateListItem = item => {
+    updateListItemSideEffects.forEach(R.applyTo(item));
+    const key = item[uniqueKey];
+    setState(prevState => {
+      useListStateUtils.deepMerge(prevState.hashMap.get(key), item);
       return {
         ...prevState
       };
@@ -70,36 +81,23 @@ export const useListState = ({
   );
 
   const clearList = () => {
-    setState({
+    setState(prevState => ({
       list: [],
-      object: {},
-    });
-  };
-
-  const updateListItem = item => {
-    updateListItemSideEffects.forEach(R.applyTo(item));
-    const key = item[uniqueKey];
-    setState(prevState => {
-      const newItem = R.mergeDeepRight(prevState.object[key], item);
-      prevState.object[key] = newItem;
-      prevState.list = Object.values(prevState.object);
-      return {
-        ...prevState
-      };
-    });
+      hashMap: prevState.hashMap.clear(),
+    }));
   };
 
   const publicSetState = (newArray) => {
-    const newState = useListStateUtils.arrayToObjectIfKeyExists(newArray, uniqueKey);
+    const newHashMap = useListStateUtils.arrayToHashMap(newArray, uniqueKey);
     setState(prevState => {
-      prevState.object = newState;
-      prevState.list = Object.values(newState)
+      prevState.hashMap = newHashMap;
+      prevState.list = [...newHashMap.values()];
       return { ...prevState };
     });
   };
 
   const getItemForKey = (key) => ({
-    ...objectListState[key]
+    ...hashMapState.get(key)
   });
 
   return {

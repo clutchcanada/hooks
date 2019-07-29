@@ -1,4 +1,5 @@
 import { addKey } from '@clutch/helpers';
+import * as R from "ramda";
 import useListState from './index';
 import * as useListStateUtils from "./utils";
 
@@ -16,7 +17,7 @@ describe('useListState Hook', () => {
 
       expect(useStateMock.mock.calls[0][0]).toEqual({
         list: keys,
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
+        hashMap: useListStateUtils.arrayToHashMap(keys, "key"),
       });
     });
 
@@ -47,6 +48,22 @@ describe('useListState Hook', () => {
       });
 
       expect(listState).toEqual(keys);
+    });
+
+    it('should maintain order on initialization', () => {
+      const items = R.range(0,100);
+      const itemsWithKeys = items.map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: itemsWithKeys,
+        })
+      });
+      expect(listState.listState).toEqual(itemsWithKeys);
+      const fakeItems = [...itemsWithKeys];
+      fakeItems[2] = itemsWithKeys[25];
+      fakeItems[25] = itemsWithKeys[2];
+      expect(listState.listState).not.toEqual(fakeItems)
     });
   });
 
@@ -200,7 +217,11 @@ describe('useListState Hook', () => {
       const keys = [{
         item: "hey",
         date: new Date(),
-        key: 1
+        key: 1,
+        test: {
+            a: 1,
+            b: 2,
+        },
       }, {
         item: "buddy",
         date: new Date(),
@@ -215,12 +236,24 @@ describe('useListState Hook', () => {
       
       const updatedValue = {
         item: "yolo",
+        test: {
+          a: "453"
+        },
         key: 1,
       };
       global.act(() => {
         listState.updateListItem(updatedValue);
       });
-      expect(listState.listState).toEqual([{...keys[0], ...updatedValue}, keys[1]]);
+      const expectedItem = {
+        date: keys[0].date,
+        test: {
+          a: "453",
+          b: 2,
+        },
+        key: 1,
+        item: "yolo"
+      };
+      expect(listState.listState).toEqual([expectedItem, keys[1]]);
     });
   });
 
@@ -299,17 +332,17 @@ describe('useListState Hook', () => {
   describe("clearList", () => {
     it('should call setState with an empty array', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { clearList } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-
-      clearList();
-
-      expect(setStateMock).toBeCalledWith({
-        object: {},
-        list: []
+      global.act(() => {
+        listState.clearList();
       });
+      
+      expect(listState.listState).toEqual([]);
     });
   });
 
@@ -342,6 +375,25 @@ describe('useListState Hook', () => {
       };
 
       expect(attemptedUpdate).toThrowError();
+    });
+
+    it('should maintain order of original array', () => {
+      const items = R.range(0,100);
+      const itemsWithKeys = items.map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: [],
+        })
+      });
+      global.act(() => {
+        listState.setState(itemsWithKeys);
+      });
+      expect(listState.listState).toEqual(itemsWithKeys);
+      const fakeItems = [...itemsWithKeys];
+      fakeItems[2] = itemsWithKeys[25];
+      fakeItems[25] = itemsWithKeys[2];
+      expect(listState.listState).not.toEqual(fakeItems)
     });
   });
 

@@ -2,9 +2,9 @@ import * as R from "ramda";
 import throwErrorIfKeyIsNil from "./throwErrorIfKeyIsNil";
 
 export default (arrayToConvert, uniqueKey) => 
-  arrayToConvert.reduce((accumulator, value) => {
+  arrayToConvert.reduce((hashMap, value) => {
     const key = value[uniqueKey];
     throwErrorIfKeyIsNil(key);
-    accumulator[key] = value;
-    return accumulator;
-  }, {});
+    hashMap.set(key, value);
+    return hashMap;
+  }, new Map());
