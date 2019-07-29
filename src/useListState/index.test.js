@@ -16,7 +16,7 @@ describe('useListState Hook', () => {
 
       expect(useStateMock.mock.calls[0][0]).toEqual({
         list: keys,
-        object: useListStateUtils.arrayToObjectIfKeyExists(keys, "key"),
+        hashMap: useListStateUtils.arrayToHashMap(keys, "key"),
       });
     });
 
@@ -299,17 +299,18 @@ describe('useListState Hook', () => {
   describe("clearList", () => {
     it('should call setState with an empty array', () => {
       const keys = ['hey', 'buddy'].map(addKey);
-      const { clearList } = useListState({
-        initialValue: keys,
-        useStateDep: useStateMock,
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
       });
-
-      clearList();
-
-      expect(setStateMock).toBeCalledWith({
-        object: {},
-        list: []
+      global.act(() => {
+        listState.clearList();
       });
+      
+
+      expect(listState.listState).toEqual([]);
     });
   });
 
