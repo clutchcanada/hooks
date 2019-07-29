@@ -9,7 +9,7 @@ const deepMerge = (target, ...sources) => {
   for (const key in source) {
     if (R.is(Object, source[key])) {
       R.isNil(target[key]) && Object.assign(target, { [key]: {} });
-      mergeDeep(target[key], source[key]);
+      deepMerge(target[key], source[key]);
     } else {
       Object.assign(target, { [key]: source[key] });
     }

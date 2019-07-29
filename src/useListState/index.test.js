@@ -217,7 +217,11 @@ describe('useListState Hook', () => {
       const keys = [{
         item: "hey",
         date: new Date(),
-        key: 1
+        key: 1,
+        test: {
+            a: 1,
+            b: 2,
+        },
       }, {
         item: "buddy",
         date: new Date(),
@@ -232,12 +236,24 @@ describe('useListState Hook', () => {
       
       const updatedValue = {
         item: "yolo",
+        test: {
+          a: "453"
+        },
         key: 1,
       };
       global.act(() => {
         listState.updateListItem(updatedValue);
       });
-      expect(listState.listState).toEqual([{...keys[0], ...updatedValue}, keys[1]]);
+      const expectedItem = {
+        date: keys[0].date,
+        test: {
+          a: "453",
+          b: 2,
+        },
+        key: 1,
+        item: "yolo"
+      };
+      expect(listState.listState).toEqual([expectedItem, keys[1]]);
     });
   });
 
