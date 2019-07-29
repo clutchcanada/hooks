@@ -30,9 +30,61 @@ describe('useFormState hook', () => {
 
       expect(formState.formState).toMatchObject(expectedObject);
     });
+
+    it('should include any set default values', () => {
+      let formState;
+      global.testHook(() => {
+        formState = useFormState({
+          formKeyMap: EXAMPLE_FORM_KEY_MAP,
+          defaultValues: {
+            [EXAMPLE_FORM_KEY_MAP.EMAIL]: "test@test.com"
+          }
+        });
+      });
+      expect(formState.getValueForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe("test@test.com");
+      expect(formState.getValueForKey(EXAMPLE_FORM_KEY_MAP.PASSWORD)).toBe("");
+    });
+
+    it('should include any default state', () => {
+      let formState;
+      global.testHook(() => {
+        formState = useFormState({
+          formKeyMap: EXAMPLE_FORM_KEY_MAP,
+          defaultState: {
+            [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
+              value:"test@test.com",
+              disabled: true,
+            }
+          }
+        });
+      });
+      expect(formState.getValueForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe("test@test.com");
+      expect(formState.getIsDisabledForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe(true);
+      expect(formState.getErrorForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe(false);
+      expect(formState.getErrorMessageForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe("");
+      expect(formState.getValueForKey(EXAMPLE_FORM_KEY_MAP.PASSWORD)).toBe("");
+    });
+
+    it('should prioritize default values over default state', () => {
+      let formState;
+      global.testHook(() => {
+        formState = useFormState({
+          formKeyMap: EXAMPLE_FORM_KEY_MAP,
+          defaultValues: {
+            [EXAMPLE_FORM_KEY_MAP.EMAIL]: "test@test.com"
+          },
+          defaultState: {
+            [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
+              value:"a@test.com",
+              disabled: true,
+            }
+          }
+        });
+      });
+      expect(formState.getValueForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe("test@test.com");
+      expect(formState.getIsDisabledForKey(EXAMPLE_FORM_KEY_MAP.EMAIL)).toBe(true);
+    });
   });
-
-
 
   describe("handleValueChange", () => {
     it('should call setState with existing object but a new value for the key given', () => {
@@ -151,7 +203,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: false,
@@ -166,7 +218,6 @@ describe('useFormState hook', () => {
           }
         }
       });
-
       expect(formState.isFormValid()).toBe(false)
     });
 
@@ -174,7 +225,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: false,
@@ -197,7 +248,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: false,
@@ -223,7 +274,7 @@ describe('useFormState hook', () => {
         const formState = useFormState({
           formKeyMap: EXAMPLE_FORM_KEY_MAP,
           useStateDep: global.useStateMock(),
-          defaultValues: {
+          defaultState: {
             [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
               value: "teddy.westside@clutch.ca",
               error: false,
@@ -242,7 +293,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: true,
@@ -261,7 +312,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: false,
@@ -280,7 +331,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: false,
@@ -313,7 +364,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "teddy.westside@clutch.ca",
             error: true,
@@ -330,7 +381,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "",
             error: false,
@@ -347,7 +398,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "Talk to me, talk to me, oh baby",
             error: false,
@@ -368,7 +419,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock({ setStateMock }),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "Talk to me, talk to me, oh baby",
             error: true,
@@ -441,7 +492,7 @@ describe('useFormState hook', () => {
       const formState = useFormState({
         formKeyMap: EXAMPLE_FORM_KEY_MAP,
         useStateDep: global.useStateMock(),
-        defaultValues: {
+        defaultState: {
           [EXAMPLE_FORM_KEY_MAP.EMAIL]: {
             value: "Talk to me, talk to me, oh baby",
             error: true,
