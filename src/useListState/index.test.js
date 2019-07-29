@@ -422,4 +422,23 @@ describe('useListState Hook', () => {
       expect(retrievedItem).toEqual(keys[0]);
     });
   });  
+    
+  describe("Multiple operations", () => {
+    it('should be able to clear then add an item', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      const newData = ['yolo', 'swaggins'].map(addKey);
+      global.act(() => {
+        listState.clearList(newData);
+        listState.addListItem(keys[0]);
+      });
+      
+      expect(listState.listState).toEqual([keys[0]]);
+    });
+  });
 });

@@ -81,10 +81,12 @@ export const useListState = ({
   );
 
   const clearList = () => {
-    setState(prevState => ({
-      list: [],
-      hashMap: prevState.hashMap.clear(),
-    }));
+    setState(prevState => {
+      prevState.hashMap.clear()
+      prevState.list = [];
+      return {
+      ...prevState
+    }});
   };
 
   const publicSetState = (newArray) => {
