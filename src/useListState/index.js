@@ -66,8 +66,7 @@ export const useListState = ({
     updateListItemSideEffects.forEach(R.applyTo(item));
     const key = item[uniqueKey];
     setState(prevState => {
-      const newItem = useListStateUtils.deepMerge(prevState.hashMap.get(key), item);
-      prevState.hashMap.set(key, newItem);
+      useListStateUtils.deepMerge(prevState.hashMap.get(key), item);
       return {
         ...prevState
       };
