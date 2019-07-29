@@ -196,7 +196,7 @@ describe('useListState Hook', () => {
       expect(test).toThrowError();
     });
 
-    it('should call setState with current listState and the updated item', () => {
+    it('should call setState with current listState and the updated item merged together', () => {
       const keys = [{
         item: "hey",
         date: new Date(),
