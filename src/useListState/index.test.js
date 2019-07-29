@@ -1,4 +1,5 @@
 import { addKey } from '@clutch/helpers';
+import * as R from "ramda";
 import useListState from './index';
 import * as useListStateUtils from "./utils";
 
@@ -47,6 +48,22 @@ describe('useListState Hook', () => {
       });
 
       expect(listState).toEqual(keys);
+    });
+
+    it('should maintain order on initialization', () => {
+      const items = R.range(0,100);
+      const itemsWithKeys = items.map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: itemsWithKeys,
+        })
+      });
+      expect(listState.listState).toEqual(itemsWithKeys);
+      const fakeItems = [...itemsWithKeys];
+      fakeItems[2] = itemsWithKeys[25];
+      fakeItems[25] = itemsWithKeys[2];
+      expect(listState.listState).not.toEqual(fakeItems)
     });
   });
 
@@ -309,7 +326,6 @@ describe('useListState Hook', () => {
         listState.clearList();
       });
       
-
       expect(listState.listState).toEqual([]);
     });
   });
@@ -343,6 +359,25 @@ describe('useListState Hook', () => {
       };
 
       expect(attemptedUpdate).toThrowError();
+    });
+
+    it('should maintain order of original array', () => {
+      const items = R.range(0,100);
+      const itemsWithKeys = items.map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: [],
+        })
+      });
+      global.act(() => {
+        listState.setState(itemsWithKeys);
+      });
+      expect(listState.listState).toEqual(itemsWithKeys);
+      const fakeItems = [...itemsWithKeys];
+      fakeItems[2] = itemsWithKeys[25];
+      fakeItems[25] = itemsWithKeys[2];
+      expect(listState.listState).not.toEqual(fakeItems)
     });
   });
 
