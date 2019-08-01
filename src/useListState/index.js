@@ -2,6 +2,7 @@ import { useState } from 'react';
 import * as R from 'ramda';
 import { throwError } from '@clutch/helpers';
 import * as useListStateUtils from "./utils";
+import useEventListener from "../useEventListener";
 
 export const useListState = ({
   initialValue = [],
@@ -23,6 +24,8 @@ export const useListState = ({
     list: initialValue,
     hashMap: initialHashMapState,
   });
+  const changeListener = useEventListener({ useStateDep });
+
 
 
   const itemInStateForKey = keyToCheck => hashMapState.has(keyToCheck);
@@ -104,32 +107,43 @@ export const useListState = ({
 
   return {
     listState,
-    addListItem: R.compose(
-      addListItem,
+    addListItem: R.pipe(
+      checkItemHasKey,
       throwIfItemIsInState,
-      checkItemHasKey,
+      addListItem,
+      changeListener.trigger,
     ),
-    removeListItem: R.compose(
-      removeListItem,
+    removeListItem: R.pipe(
+      checkItemHasKey,
       throwIfItemIsNotInState,
-      checkItemHasKey,
+      removeListItem,
+      changeListener.trigger
     ),
-    toggleListItem: R.compose(
-      toggleListItem,
+    toggleListItem: R.pipe(
       checkItemHasKey,
+      toggleListItem,
+      changeListener.trigger
     ),
     updateListItem: R.pipe(
       checkItemHasKey,
       throwIfItemIsNotInState,
-      updateListItem
+      updateListItem,
+      changeListener.trigger
     ),
     getItemForKey: R.pipe(
       R.tap(throwIfKeyIsNotInState),
       getItemForKey,
     ),
     itemInStateForKey,
-    setState: publicSetState,
-    clearList,
+    setState: R.pipe(
+      publicSetState,
+      changeListener.trigger
+    ),
+    clearList: R.pipe(
+      clearList,
+      changeListener.trigger
+    ),
+    changeCount: changeListener.callCount,
   };
 };
 

@@ -441,4 +441,117 @@ describe('useListState Hook', () => {
       expect(listState.listState).toEqual([keys[0]]);
     });
   });
+
+  describe("changeCount", () => {
+    it('should be initially set to 0', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      expect(listState.changeCount).toBe(0);
+    });
+    
+    it('should increment by one on addListItem', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.addListItem({ item: "Frodo", key: 3 });
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+    
+    it('should increment by one on removeListItem', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.removeListItem(keys[0]);
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+
+    it('should increment by one on updateListItem', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.updateListItem({ item: "Frodo", key: keys[0].key });
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+
+    it('should increment by one on toggleListItem', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.toggleListItem(keys[0]);
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+
+    it('should increment by one on setState', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.setState(keys);
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+
+    it('should increment by one on clearList', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.clearList();
+      });
+      expect(listState.changeCount).toBe(1);
+    });
+
+    it('should increment by 2 after 2 actions', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.addListItem({ item: "Frodo", key: 3 });
+        listState.removeListItem(keys[0])
+      });
+      expect(listState.changeCount).toBe(2);;
+    });
+    
+  });
 });
