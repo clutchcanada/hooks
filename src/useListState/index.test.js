@@ -523,5 +523,21 @@ describe('useListState Hook', () => {
       });
       expect(listState.changeCount).toBe(1);
     });
+
+    it('should increment by 2 after 2 actions', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      global.act(() => {
+        listState.addListItem({ item: "Frodo", key: 3 });
+        listState.removeListItem(keys[0])
+      });
+      expect(listState.changeCount).toBe(2);;
+    });
+    
   });
 });
