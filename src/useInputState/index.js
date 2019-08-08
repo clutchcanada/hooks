@@ -5,6 +5,7 @@ export const useInputState = ({
   initialValue = '',
   useStateDep = useState,
   useEffectDep = useEffect,
+  isDateObject,
 } = {}) => {
   const [stateValue, setStateValue] = useStateDep(initialValue);
 
@@ -13,7 +14,7 @@ export const useInputState = ({
   }, []);
 
   const handleChange = event => {
-    const { value } = event.target;
+    const value = isDateObject ? event : event.target.value;
     sideEffects.forEach(fn => fn(value));
     setStateValue(value);
     return event;
