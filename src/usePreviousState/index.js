@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import * as R from "ramda";
 import { throwError } from "@clutch/helpers";
 
 export const usePreviousState = ({
@@ -6,7 +7,7 @@ export const usePreviousState = ({
     useEffectDep = useEffect,
     useRefDep = useRef
 }) => {
-    !value && throwError('Value prop is missing')
+    R.isNil(value) && throwError('value prop is missing');
 
     const previousStateRef = useRefDep();
 
