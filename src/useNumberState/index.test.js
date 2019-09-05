@@ -15,7 +15,6 @@ describe("useNumberState hook", () => {
     });
     global.act(() => {
       numberState.increment()
-
     });
     expect(numberState.value).toBe(1);
   });
@@ -27,7 +26,6 @@ describe("useNumberState hook", () => {
     });
     global.act(() => {
       numberState.decrement()
-
     });
     expect(numberState.value).toBe(-1);
   });
@@ -39,7 +37,6 @@ describe("useNumberState hook", () => {
     });
     global.act(() => {
       numberState.setValue(3)
-
     });
     expect(numberState.value).toBe(3);
   });
