@@ -10,3 +10,4 @@ export { default as combineProviders } from "./combineProviders";
 export { default as useApiCall } from "./useApiCall";
 export { default as useStepState } from "./useStepState";
 export { default as usePreviousState}  from "./usePreviousState";
+export { default as useNumberState } from "./useNumberState";
