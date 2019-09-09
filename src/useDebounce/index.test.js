@@ -26,5 +26,32 @@ describe("useDebounce", () => {
       done()
     }, 500);
   });
+
+  it('should use the last call', () => {
+    let exampleState;
+    let debouncedState;
+    global.testHook(() => {
+      exampleState = useState(0);
+      debouncedState = useDebounce({
+        value: exampleState[0],
+        delay: 500,
+      })
+    });
+    global.act(() => {
+      exampleState[1](5)
+      exampleState[1](6)
+      exampleState[1](7)
+      exampleState[1](8)
+
+    });
+    setTimeout(() => {
+      expect(debouncedState).toBe(0);
+    }, 500);
+    setTimeout(() => {
+      expect(debouncedState).toBe(8);
+      done()
+    }, 500);
+  });
+  
   
 });
