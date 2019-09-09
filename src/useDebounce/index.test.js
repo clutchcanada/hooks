@@ -27,7 +27,7 @@ describe("useDebounce", () => {
     }, 500);
   });
 
-  it('should use the last call', () => {
+  it('should use the last setState call', () => {
     let exampleState;
     let debouncedState;
     global.testHook(() => {
