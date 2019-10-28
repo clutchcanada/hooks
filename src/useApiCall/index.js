@@ -17,11 +17,11 @@ const useApiCall = ({
       isLoadingState.setTrue();
       const response = await apiCallFn(...args);
       isLoadingState.setFalse();
-      onSuccess(response);
+      onSuccess({ response, payload: args });
       return response;
     } catch (error) {
       isLoadingState.setFalse();
-      onError(error);
+      onError({ error, payload: args });
       return null;
     }
   };
