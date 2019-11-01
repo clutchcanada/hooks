@@ -6,9 +6,15 @@ const useEventListener = ({ useStateDep = useState } = {}) => {
   const trigger = () => {
     setState(prevState => prevState + 1);
   };
+
+  const reset = () => {
+    setState(0);
+  };
+
   return {
     callCount,
     trigger,
+    reset,
   };
 };
 
