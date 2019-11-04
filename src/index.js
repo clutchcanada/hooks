@@ -12,3 +12,4 @@ export { default as useStepState } from "./useStepState";
 export { default as usePreviousState}  from "./usePreviousState";
 export { default as useNumberState } from "./useNumberState";
 export { default as useDebounce } from "./useDebounce";
+export { default as usePromiseWithLoadingState } from "./usePromiseWithLoadingState"
