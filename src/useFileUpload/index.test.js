@@ -1,5 +1,7 @@
 import useFileUpload from "./index";
 
+//TO-DO: Write more tests for this hook
+
 describe("useFileUpload", () => {
   it('should throw an error if no files are specified', () => {
 
