@@ -13,4 +13,25 @@ describe("useEventListener", () => {
     const calledWith = setStateMock.mock.calls[0][0](0);
     expect(calledWith).toBe(1);
   });
+
+  it('should reset callCount to 0 on reset', () => {
+    let useEventListenerState;
+    global.testHook(() => {
+      useEventListenerState = useEventListener();
+    });
+
+    global.act(() => {
+      useEventListenerState.trigger();
+    });
+
+    expect(useEventListenerState.callCount).toBe(1);
+
+    global.act(() => {
+      useEventListenerState.reset();
+    });
+
+    expect(useEventListenerState.callCount).toBe(0);
+
+  })
+  
 });
