@@ -14,3 +14,4 @@ export { default as useNumberState } from "./useNumberState";
 export { default as useDebounce } from "./useDebounce";
 export { default as usePromiseWithLoadingState } from "./usePromiseWithLoadingState"
 export { default as useFileUpload } from "./useFileUpload";
+export { default as useUpdateOnlyEffect } from "./useUpdateOnlyEffect";

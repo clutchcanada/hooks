@@ -11,16 +11,9 @@ const useApiCall = ({
   onError = (error) => { throw error },
   onSuccess = () => {},
   useStateDep = useState,
-  useEffectDep = useEffect,
 } = {}) => {
   R.isNil(apiCallFn) && throwError("No api call fn specified in useApiCall");
   const isLoadingState = useBooleanState({ useStateDep });
-  const [axiosCancelTokenState, setAxiosCancelTokenState] = useState(null);
-
-  useEffectDep(() => {
-    const source = CancelToken.source();
-    setAxiosCancelTokenState(axiosCancelTokenState);
-  }, []);
 
   const makeCall = async (...args) => {
     try {
@@ -38,16 +31,9 @@ const useApiCall = ({
     }
   };
 
-  const cancelCall = () => {
-    isLoadingState.value && 
-    !!axiosCancelTokenState &&
-    axiosCancelTokenState.cancel();
-  }
-
   return {
     isLoading: isLoadingState.value,
     makeCall,
-    cancelCall,
   };
 };
 
