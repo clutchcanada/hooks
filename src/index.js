@@ -14,3 +14,5 @@ export { default as useNumberState } from "./useNumberState";
 export { default as useDebounce } from "./useDebounce";
 export { default as useFileUpload } from "./useFileUpload";
 export { default as useUpdateOnlyEffect } from "./useUpdateOnlyEffect";
+export { default as useUpdateOnlyEffect } from "./useUpdateOnlyEffect";
+export { default as useKeyPress } from "./useKeyPress"; 
