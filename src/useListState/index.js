@@ -92,13 +92,25 @@ export const useListState = ({
     }});
   };
 
-  const publicSetState = (newArray) => {
-    const newHashMap = useListStateUtils.arrayToHashMap(newArray, uniqueKey);
-    setState(prevState => {
-      prevState.hashMap = newHashMap;
-      prevState.list = [...newHashMap.values()];
-      return { ...prevState };
-    });
+  const publicSetState = (paramGiven) => {
+    if(R.is(Function, paramGiven)) {
+      const mappingFunction = paramGiven;
+      setState(prevState => {
+        const newList = mappingFunction(prevState.list);
+        const newHashMap = useListStateUtils.arrayToHashMap(newList, uniqueKey);
+        prevState.hashMap = newHashMap;
+        prevState.list = [...newHashMap.values()];
+        return { ...prevState };
+      });
+    } else {
+      const newArray = paramGiven;
+      const newHashMap = useListStateUtils.arrayToHashMap(newArray, uniqueKey);
+      setState(prevState => {
+        prevState.hashMap = newHashMap;
+        prevState.list = [...newHashMap.values()];
+        return { ...prevState };
+      });
+    }
   };
 
   const getItemForKey = (key) => ({

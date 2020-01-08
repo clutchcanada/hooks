@@ -362,6 +362,23 @@ describe('useListState Hook', () => {
 
       expect(listState.listState).toEqual(newData);
     }); 
+  
+    it('should accept function param', () => {
+      const keys = ['hey', 'buddy'].map(addKey);
+      let listState;
+      global.testHook(() => {
+        listState = useListState({
+          initialValue: keys,
+        });
+      });
+      const addNewData = prevList => [...prevList, { key:"me", value: "me" }];
+      const newData = [...listState.listState, { key:"me", value: "me" }];
+      global.act(() => {
+        listState.setState(addNewData);
+      });
+
+      expect(listState.listState).toEqual(newData);
+    }); 
     
     it('should throw an error if items do not have keys', () => {
       const keys = ['hey', 'buddy'].map(addKey);
