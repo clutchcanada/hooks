@@ -93,12 +93,22 @@ export const useListState = ({
   };
 
   const publicSetState = (newArray) => {
-    const newHashMap = useListStateUtils.arrayToHashMap(newArray, uniqueKey);
-    setState(prevState => {
-      prevState.hashMap = newHashMap;
-      prevState.list = [...newHashMap.values()];
-      return { ...prevState };
-    });
+    if(R.is(Function, newArray)) {
+      setState(prevState => {
+        const newList = newArray(prevState.list);
+        const newHashMap = useListStateUtils.arrayToHashMap(newList, uniqueKey);
+        prevState.hashMap = newHashMap;
+        prevState.list = [...newHashMap.values()];
+        return { ...prevState };
+      });
+    } else {
+      const newHashMap = useListStateUtils.arrayToHashMap(newArray, uniqueKey);
+      setState(prevState => {
+        prevState.hashMap = newHashMap;
+        prevState.list = [...newHashMap.values()];
+        return { ...prevState };
+      });
+    }
   };
 
   const getItemForKey = (key) => ({
