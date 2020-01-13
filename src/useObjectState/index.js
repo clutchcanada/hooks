@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import * as R from 'ramda';
 
-const useObjectState = ({ initialState = {}, useStateDep = useState }) => {
-  const [state, setState] = useStateDep(initialState);
+const useObjectState = (initialState = {}) => {
+  const [state, setState] = useState(initialState);
 
-  const update = R.pipe(R.mergeRight(state), setState);
+  const update = R.pipe(R.mergeLeft, setState);
 
-  const updateOne = R.curry(R.pipe(R.objOf, update));
+  const updateOne = R.curry((key, value) => update({ [key]: value }));
 
   const reset = (value = initialState) => setState(value);
 
@@ -15,6 +15,7 @@ const useObjectState = ({ initialState = {}, useStateDep = useState }) => {
     update,
     updateOne,
     reset,
+    setState,
   };
 };
 

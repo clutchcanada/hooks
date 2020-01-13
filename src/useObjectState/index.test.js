@@ -2,85 +2,70 @@ import useObjectState from './index';
 
 describe('useObjectState', () => {
   const coolObject = { nice: 69, blazeIt: 420 };
+  const testUseObjectState = initialState => {
+    let objectStateHook;
+    global.testHook(() => {
+      objectStateHook = useObjectState(initialState);
+    });
+    return objectStateHook;
+  };
 
   describe('Initialisation', () => {
-    const useStateMock = global.useStateMock();
-
-    it('should call useState with its argument', () => {
-      useStateMock.mockClear();
-      useObjectState({ initialState: coolObject, useStateDep: useStateMock });
-
-      expect(useStateMock).toBeCalledWith(coolObject);
+    it('should return the initial state value in the return object', () => {
+      const objectStateHook = testUseObjectState(coolObject);
+      expect(objectStateHook.value).toStrictEqual(coolObject);
     });
 
-    it('should return the initial state value in the return object', () => {
-      useStateMock.mockClear();
-      const { value: objectState1 } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+    it('should default to an empty object for the initial state if none is given', () => {
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState();
       });
-
-      expect(objectState1).toStrictEqual(coolObject);
-
-      useStateMock.mockClear();
-      const { value: objectState2 } = useObjectState({
-        useStateDep: useStateMock,
-      });
-
-      expect(objectState2).toStrictEqual({});
+      expect(objectStateHook.value).toStrictEqual({});
     });
   });
 
   describe('updateOne function', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
-
     it('should add the given property and value to the state if not present already', () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-
-      const { updateOne: updateOneProperty } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState(coolObject);
       });
-      updateOneProperty('newProperty')(1337);
-      expect(setStateMock.mock.calls[0][0]).toStrictEqual({
+      global.act(() => {
+        objectStateHook.updateOne('dewIt')(66);
+      });
+      expect(objectStateHook.value).toStrictEqual({
         nice: 69,
         blazeIt: 420,
-        newProperty: 1337,
+        dewIt: 66,
       });
     });
 
     it('should update the given property if already present', () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-
-      const { updateOne: updateOneProperty } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState(coolObject);
       });
-      updateOneProperty('nice')(109);
-      expect(setStateMock.mock.calls[0][0]).toStrictEqual({
+      global.act(() => {
+        objectStateHook.updateOne('nice')(109);
+      });
+      expect(objectStateHook.value).toStrictEqual({
         nice: 109,
         blazeIt: 420,
       });
     });
   });
 
-  describe('updateOne function', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
-
+  describe('update function', () => {
     it("should merge its argument's properties into the state", () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-
-      const { update } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState(coolObject);
       });
-      update({ newProperty: 1337, nice: 109 });
-      expect(setStateMock.mock.calls[0][0]).toStrictEqual({
+      global.act(() => {
+        objectStateHook.update({ newProperty: 1337, nice: 109 });
+      });
+      expect(objectStateHook.value).toStrictEqual({
         nice: 109,
         blazeIt: 420,
         newProperty: 1337,
@@ -89,33 +74,31 @@ describe('useObjectState', () => {
   });
 
   describe('reset function', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
-
     it('should set the state to its argument', () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-
-      const { reset } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState(coolObject);
       });
       const newState = { newProperty: 1337, nice: 109 };
-      reset(newState);
-      expect(setStateMock.mock.calls[0][0]).toStrictEqual(newState);
+      global.act(() => {
+        objectStateHook.reset(newState);
+      });
+      expect(objectStateHook.value).toStrictEqual(newState);
     });
 
     it('should default to the initial state if no argument is given', () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-
-      const { reset } = useObjectState({
-        initialState: coolObject,
-        useStateDep: useStateMock,
+      let objectStateHook;
+      global.testHook(() => {
+        objectStateHook = useObjectState(coolObject);
       });
-
-      reset(coolObject);
-      expect(setStateMock.mock.calls[0][0]).toStrictEqual(coolObject);
+      global.act(() => {
+        objectStateHook.update({ hey: 'the state has been changed' });
+      });
+      expect(objectStateHook.value).not.toStrictEqual(coolObject);
+      global.act(() => {
+        objectStateHook.reset();
+      });
+      expect(objectStateHook.value).toStrictEqual(coolObject);
     });
   });
 });
