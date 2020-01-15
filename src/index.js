@@ -15,3 +15,4 @@ export { default as useObjectState } from "./useObjectState";
 export { default as useDebounce } from "./useDebounce";
 export { default as useFileUpload } from "./useFileUpload";
 export { default as useUpdateOnlyEffect } from "./useUpdateOnlyEffect";
+export { default as withProvider } from "./withProvider";
