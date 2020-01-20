@@ -448,6 +448,40 @@ describe('useFormState hook', () => {
     });
   });
 
+  describe("resetToDefault", () => {
+    it('should call setState with the resetToDefault form key values', () => {
+      let formState;
+      global.testHook(() => {
+        formState = useFormState({
+          formKeyMap: EXAMPLE_FORM_KEY_MAP,
+          defaultValues: {
+            email: "test@test.com",
+            password: 'test'
+          }
+        });
+      });
+
+      const expectedObject = {
+        email: {
+          value: 'test@test.com',
+          error: false,
+          errorMessage: '',
+          disabled: false,
+        },
+        password: {
+          value: 'test',
+          error: false,
+          errorMessage: '',
+          disabled: false,
+        }
+      };
+      global.act(() => {
+        formState.resetToDefault();
+      });
+      expect(formState.formState).toEqual(expectedObject);
+    });
+  });
+
   describe("isValidating", () => {
     it('should initialize to false', () => {
       const formState = useFormState({

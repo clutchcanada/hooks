@@ -51,6 +51,10 @@ const useFormState = ({
     setFormState(reduceFormKeysToState(formKeyMap));
   };
 
+  const resetToDefault = () => {
+    setFormState(R.mergeDeepRight(reduceFormKeysToState(formKeyMap), defaultStateWithValues));
+  };
+
   const isValidForKey = key =>
     R.complement(isValidTextEntry)(getValueForKey(key)) &&
     !getErrorForKey(key) &&
@@ -90,6 +94,7 @@ const useFormState = ({
     focusListener: formKey => R.partial(toggleFocusKey, [formKey]),
     setFormState,
     reset,
+    resetToDefault,
     isValidForKey,
     getErrorMessageForKey,
     setErrorMessageForKey: updateState({ stateKey: 'errorMessage' }),
