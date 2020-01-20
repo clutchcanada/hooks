@@ -12,7 +12,7 @@ const useFormState = ({
 } = {}) => {
   const {
     value: isValidating,
-    setTrue: setIsValidatingTrue,
+  setTrue: setIsValidatingTrue,
     setFalse: setIsValidatingFalse,
   } = useBooleanState({ useStateDep });
   const defaultStateWithValues = Object.entries(defaultValues).reduce((accumulator, [key, value]) => {
@@ -49,6 +49,10 @@ const useFormState = ({
 
   const reset = () => {
     setFormState(reduceFormKeysToState(formKeyMap));
+  };
+
+  const resetToDefault = () => {
+    setFormState(R.mergeDeepRight(reduceFormKeysToState(formKeyMap), defaultStateWithValues));
   };
 
   const isValidForKey = key =>
@@ -90,6 +94,7 @@ const useFormState = ({
     focusListener: formKey => R.partial(toggleFocusKey, [formKey]),
     setFormState,
     reset,
+    resetToDefault,
     isValidForKey,
     getErrorMessageForKey,
     setErrorMessageForKey: updateState({ stateKey: 'errorMessage' }),
