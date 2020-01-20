@@ -12,7 +12,7 @@ const useFormState = ({
 } = {}) => {
   const {
     value: isValidating,
-  setTrue: setIsValidatingTrue,
+    setTrue: setIsValidatingTrue,
     setFalse: setIsValidatingFalse,
   } = useBooleanState({ useStateDep });
   const defaultStateWithValues = Object.entries(defaultValues).reduce((accumulator, [key, value]) => {
