@@ -450,17 +450,17 @@ describe('useFormState hook', () => {
 
   describe("resetToDefault", () => {
     it('should call setState with the resetToDefault form key values', () => {
-      const setStateMock = jest.fn();
-
-      const formState = useFormState({
-        formKeyMap: EXAMPLE_FORM_KEY_MAP,
-        useStateDep: global.useStateMock({ setStateMock }),
-        defaultValues: {
-          email: "test@test.com",
-          password: 'test'
-        }
+      let formState;
+      global.testHook(() => {
+        formState = useFormState({
+          formKeyMap: EXAMPLE_FORM_KEY_MAP,
+          defaultValues: {
+            email: "test@test.com",
+            password: 'test'
+          }
+        });
       });
-      setStateMock.mockClear();
+
       const expectedObject = {
         email: {
           value: 'test@test.com',
@@ -475,8 +475,10 @@ describe('useFormState hook', () => {
           disabled: false,
         }
       };
-      formState.resetToDefault();
-      expect(setStateMock).toBeCalledWith(expectedObject);
+      global.act(() => {
+        formState.resetToDefault();
+      });
+      expect(formState.formState).toEqual(expectedObject);
     });
   });
 
