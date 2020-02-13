@@ -2,90 +2,91 @@ import useBooleanState from './index';
 
 describe('useBooleanState Hook', () => {
   describe('Initialisation', () => {
-    const useStateMock = global.useStateMock();
-
     it('should call useState with the initialState param', () => {
-      useStateMock.mockClear();
-      useBooleanState({ initialState: true, useStateDep: useStateMock });
-
-      expect(useStateMock).toBeCalledWith(true);
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
+      });
+      expect(booleanState.value).toBe(false);
     });
 
     it('should throw an error if the initial state param is not a boolean value', () => {
-      useStateMock.mockClear();
       const test = () => {
-        useBooleanState({ initialState: 'hey', useStateDep: useStateMock });
+        useBooleanState({ initialState: 'hey' });
       };
       expect(test).toThrowError();
     });
 
     it('should return the initial stateValue in the return object', () => {
-      useStateMock.mockClear();
-      const { value: isOpen1 } = useBooleanState({
-        initialState: true,
-        useStateDep: useStateMock,
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState({
+          initialState: true,
+        });
       });
-
-      expect(isOpen1).toBe(true);
-
-      useStateMock.mockClear();
-      const { value: isOpen2 } = useBooleanState({ useStateDep: useStateMock });
-
-      expect(isOpen2).toBe(false);
+      expect(booleanState.value).toBe(true);
+      global.testHook(() => {
+        booleanState = useBooleanState();
+      });
+      expect(booleanState.value).toBe(false);
     });
   });
 
   describe('toggle function', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
-
     it('should call setState with flipped value of state', () => {
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-      const { value: isOpen1, toggle: toggleModal1 } = useBooleanState({
-        initialState: true,
-        useStateDep: useStateMock,
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
       });
-
-      toggleModal1();
-
-      expect(setStateMock).toBeCalledWith(!isOpen1);
-
-      setStateMock.mockClear();
-      useStateMock.mockClear();
-      const { value: isOpen2, toggle: toggleModal2 } = useBooleanState({
-        useStateDep: useStateMock,
+      global.act(() => {
+        booleanState.toggle();
       });
-
-      toggleModal2();
-
-      expect(setStateMock).toBeCalledWith(!isOpen2);
+      expect(booleanState.value).toBe(true);
+      global.act(() => {
+        booleanState.toggle();
+      });
+      expect(booleanState.value).toBe(false);
     });
   });
 
   describe('setTrue', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
     it('should call setSate with true', () => {
-      const { setTrue } = useBooleanState({
-        initialState: true,
-        useStateDep: useStateMock,
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
       });
-      setTrue();
-      expect(setStateMock).toBeCalledWith(true);
+      global.act(() => {
+        booleanState.setTrue();
+      });
+      expect(booleanState.value).toBe(true);
     });
   });
 
   describe('setFalse', () => {
-    const setStateMock = jest.fn();
-    const useStateMock = global.useStateMock({ setStateMock });
-    it('should call setSate with true', () => {
-      const { setFalse } = useBooleanState({
-        initialState: true,
-        useStateDep: useStateMock,
+    it('should call setSate with false', () => {
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState({
+          initialState: true,
+        });
       });
-      setFalse();
-      expect(setStateMock).toBeCalledWith(false);
+      global.act(() => {
+        booleanState.setFalse();
+      });
+      expect(booleanState.value).toBe(false);
     });
   });
+
+  describe('setState', () => {
+    it('should call setState when setState method is invoked', () => {
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
+      });
+      global.act(() => {
+        booleanState.setState(true);
+      });
+      expect(booleanState.value).toBe(true);
+    })
+  })
 });
