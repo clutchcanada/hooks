@@ -2,7 +2,7 @@ import React from "react";
 import * as R from "ramda";
 
 const withProvider = R.curry((Provider, Component, props) => (
-  <Provider>
+  <Provider {...props}>
     <Component {...props} />
   </Provider>
 ));
