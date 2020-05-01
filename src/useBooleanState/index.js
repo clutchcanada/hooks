@@ -14,11 +14,18 @@ export const useBooleanState = ({
   const setTrue = () => setBooleanState(true);
   const setFalse = () => setBooleanState(false);
 
+  const setState = (value) => {
+    if (typeof value !== 'boolean')
+      throwError('Boolean state must be a boolean value');
+    setBooleanState(value);
+  };
+
   return {
     value,
     toggle,
     setTrue,
     setFalse,
+    setState,
   };
 };
 
