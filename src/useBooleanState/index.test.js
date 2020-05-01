@@ -88,4 +88,27 @@ describe('useBooleanState Hook', () => {
       expect(setStateMock).toBeCalledWith(false);
     });
   });
+
+  describe('setState', () => {
+    it('should throw an error if a non-boolean value is passed', () => {
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
+      });
+      const test = () => {
+        booleanState.setState('clearly a boolean');
+      };
+      expect(test).toThrowError();
+    });
+    it('should set the state if a valid boolean is passed', () => {
+      let booleanState;
+      global.testHook(() => {
+        booleanState = useBooleanState();
+      });
+      global.act(() => {
+        booleanState.setState(true);
+      });
+      expect(booleanState.value).toBe(true);
+    });
+  });
 });
