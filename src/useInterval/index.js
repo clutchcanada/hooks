@@ -11,7 +11,7 @@ const useInterval = (callback, delay) => {
     if(delay !== null) {  
       const interval = setInterval(() => {
         callbackRef.current(); 
-      });
+      }, delay);
       return () => {
         clearInterval(interval);
       }
