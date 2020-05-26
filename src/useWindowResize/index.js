@@ -6,7 +6,7 @@ const useWindowResize = ({
 } = {}) => {
   const [windowWidth, setWindowWidth] = useStateDep(window.innerWidth);
 
-  const updateWindowWidth = () => {	
+  const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
   };
   useEffectDep(() => {
