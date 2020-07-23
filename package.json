@@ -4,7 +4,8 @@
   "scripts": {
     "build": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist --ignore 'src/**/*.test.js'",
     "build:test": "rm -rf ./dist && export BABEL_ENV=production && babel src --out-dir dist",
-    "test": "./node_modules/.bin/jest --watch"
+    "test": "./node_modules/.bin/jest --watch",
+    "release": "npm run test --  --bail --watchAll=false --maxWorkers=1 && npm run build && npm publish"
   },
   "description": "A collection of common hooks we use a clutch",
   "main": "dist/index.js",
