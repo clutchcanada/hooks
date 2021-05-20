@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const useWindowResize = ({
   useStateDep = useState,
@@ -6,24 +6,25 @@ const useWindowResize = ({
   debounce = true,
 } = {}) => {
   const [windowWidth, setWindowWidth] = useStateDep(window.innerWidth);
-  const [timeoutState, setTimeoutState] = useStateDep();
+  const timeoutRef = useRef();
 
   const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
   };
 
   const debouncedUpdateWindowWidth = () => {
+    timeoutRef.current && clearTimeout(timeoutRef.current);
     const timeout = setTimeout(() => {
       updateWindowWidth();
     }, 400);
-    setTimeoutState(timeout);
+    timeoutRef.current = timeout;
   }
 
   useEffectDep(() => {
     window.addEventListener('resize', debounce ? debouncedUpdateWindowWidth : updateWindowWidth);
     return () => {
       window.removeEventListener('resize', debounce ? debouncedUpdateWindowWidth : updateWindowWidth);
-      clearTimeout(timeoutState);
+      clearTimeout(timeoutRef.current);
     }
   }, []);
 
