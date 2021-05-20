@@ -8,6 +8,7 @@ describe("useWindowResize", () => {
     useWindowResize({
       useStateDep: global.useStateMock({ setStateMock }),
       useEffectDep: (fn) => fn(),
+      useRefDep: () => {return {current: null}},
     });
     global.innerWidth = 500;
     global.dispatchEvent(new Event('resize'));
@@ -24,6 +25,7 @@ describe("useWindowResize", () => {
     useWindowResize({
       useStateDep: global.useStateMock({ setStateMock }),
       useEffectDep: (fn) => fn(),
+      useRefDep: () => {return {current: null}},
       debounce: false
     });
     global.innerWidth = 500;

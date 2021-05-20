@@ -3,10 +3,11 @@ import { useEffect, useState, useRef } from 'react';
 const useWindowResize = ({
   useStateDep = useState,
   useEffectDep = useEffect,
+  useRefDep = useRef,
   debounce = true,
 } = {}) => {
   const [windowWidth, setWindowWidth] = useStateDep(window.innerWidth);
-  const timeoutRef = useRef();
+  const timeoutRef = useRefDep();
 
   const updateWindowWidth = () => {
     setWindowWidth(window.innerWidth);
