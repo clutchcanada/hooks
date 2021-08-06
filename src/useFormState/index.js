@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as R from 'ramda';
+import SparkMD5 from "spark-md5";
+
 import { useBooleanState, useAccordionState } from '../index';
 import { isValidTextEntry, reduceFormKeysToState } from "./utils";
 
@@ -15,6 +17,9 @@ const useFormState = ({
     setTrue: setIsValidatingTrue,
     setFalse: setIsValidatingFalse,
   } = useBooleanState({ useStateDep });
+
+  const formDataHashRef = useRef();
+
   const defaultStateWithValues = Object.entries(defaultValues).reduce((accumulator, [key, value]) => {
     accumulator[key] = {
       ...accumulator[key],
@@ -22,9 +27,20 @@ const useFormState = ({
     };
     return accumulator
   }, defaultState);
+
   const [formState, setFormState] = useStateDep(
       R.mergeDeepRight(reduceFormKeysToState(formKeyMap), defaultStateWithValues)
     );
+
+  useEffect(() => {
+    const stringifiedData = !formState || R.isEmpty(formState) ? '' : JSON.stringify(formState);
+    formDataHashRef.current = SparkMD5.hash(stringifiedData);
+  }, [formState]);
+
+  const hasFormStateChanged = () => {
+    const stringifiedData = !formState || R.isEmpty(formState) ? '' : JSON.stringify(formState);
+    return formDataHashRef.current === SparkMD5.hash(stringifiedData);
+  }
 
   const {
     togglePanel: toggleFocusKey,
@@ -101,6 +117,7 @@ const useFormState = ({
     isFormValid,
     getPayload,
     getIsDisabledForKey,
+    hasFormStateChanged,
   };
 };
 
