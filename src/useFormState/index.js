@@ -8,6 +8,7 @@ const useFormState = ({
   defaultValues = {},
   optionalKeys = [],
   defaultState = {},
+  customValidators = {},
   useStateDep = useState,
 } = {}) => {
   const {
@@ -55,10 +56,21 @@ const useFormState = ({
     setFormState(R.mergeDeepRight(reduceFormKeysToState(formKeyMap), defaultStateWithValues));
   };
 
-  const isValidForKey = key =>
-    R.complement(isValidTextEntry)(getValueForKey(key)) &&
-    !getErrorForKey(key) &&
-    !isValidating;
+  const isValidForKey = key => {
+    const valueForKey = getValueForKey(key);
+    if (customValidators[key]) {
+      return (
+        !getErrorForKey(key) &&
+        !isValidating &&
+        customValidators[key]({
+          value: valueForKey,
+          setErrorMessage: updateState({ stateKey: 'errorMessage' })(key),
+        })
+      );
+    }
+
+    return R.complement(isValidTextEntry)(valueForKey) && !getErrorForKey(key) && !isValidating;
+  }
 
   const getPayload = () =>
     Object.values(formKeyMap).reduce(
