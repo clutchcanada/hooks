@@ -59,7 +59,14 @@ const useFormState = ({
   const isValidForKey = key => {
     const valueForKey = getValueForKey(key);
     if (customValidators[key]) {
-      return customValidators[key](valueForKey) && !getErrorForKey(key) && !isValidating;
+      return (
+        !getErrorForKey(key) &&
+        !isValidating &&
+        customValidators[key]({
+          value,
+          setErrorMessage: updateState({ stateKey: 'errorMessage' })(key),
+        })
+      );
     }
 
     return R.complement(isValidTextEntry)(valueForKey) && !getErrorForKey(key) && !isValidating;
