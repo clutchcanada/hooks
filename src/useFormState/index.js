@@ -63,7 +63,7 @@ const useFormState = ({
         !getErrorForKey(key) &&
         !isValidating &&
         customValidators[key]({
-          value,
+          value: valueForKey,
           setErrorMessage: updateState({ stateKey: 'errorMessage' })(key),
         })
       );
