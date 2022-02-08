@@ -1,4 +1,4 @@
-import useBooleanState from './index';
+import { useBooleanState } from './index';
 
 describe('useBooleanState Hook', () => {
   describe('Initialisation', () => {
