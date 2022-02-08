@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { throwError } from '@clutch/helpers';
 
-type State = {
+type BooleanInitialState = {
   initialState: boolean;
   useStateDep: typeof useState;
 };
@@ -9,7 +9,7 @@ type State = {
 export const useBooleanState = ({
   initialState = false,
   useStateDep = useState,
-}: State) => {
+}: BooleanInitialState) => {
   if (typeof initialState !== 'boolean')
     throwError('Boolean state must be a boolean value');
   const [value, setBoolean] = useStateDep(initialState);
