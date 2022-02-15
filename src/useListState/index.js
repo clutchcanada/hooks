@@ -36,7 +36,12 @@ export const useListState = ({
         )
       : item;
   const throwIfKeyIsNotInState = (key) =>
-    !itemInStateForKey(key) && throwError('No item in state with this key');
+    !itemInStateForKey(key) &&
+    throwError(
+      `No item in state with this key... key: ${key}, uniqueHashMap: ${JSON.stringify(
+        Array.from(hashMapState),
+      )}`,
+    );
   const throwIfItemIsNotInState = (item) => {
     throwIfKeyIsNotInState(item[uniqueKey]);
     return item;
