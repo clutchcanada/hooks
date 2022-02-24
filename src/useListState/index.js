@@ -34,7 +34,7 @@ export const useListState = ({
             item[uniqueKey]
           }, listState:${JSON.stringify(
             listState,
-          )}, uniqueHashMap:${JSON.stringify(Array.from(hashMapState))}`,
+          )}, hashMapState:${JSON.stringify(Array.from(hashMapState))}`,
         )
       : item;
   const throwIfKeyIsNotInState = (key) =>
@@ -42,7 +42,7 @@ export const useListState = ({
     throwError(
       `No item with key:${key}, listState:${JSON.stringify(
         listState,
-      )}, uniqueHashMap:${JSON.stringify(Array.from(hashMapState))}`,
+      )}, hashMapState:${JSON.stringify(Array.from(hashMapState))}`,
     );
   const throwIfItemIsNotInState = (item) => {
     throwIfKeyIsNotInState(item[uniqueKey]);
