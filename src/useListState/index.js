@@ -32,15 +32,17 @@ export const useListState = ({
       ? throwError(
           `An item in state already exists for this key value... selectedFilterId: ${
             item[uniqueKey]
-          }, uniqueHashMap: ${JSON.stringify(Array.from(hashMapState))}`,
+          }, listState: ${JSON.stringify(
+            listState,
+          )}, uniqueHashMap: ${JSON.stringify(Array.from(hashMapState))}`,
         )
       : item;
   const throwIfKeyIsNotInState = (key) =>
     !itemInStateForKey(key) &&
     throwError(
-      `No item in state with this key... key: ${key}, uniqueHashMap: ${JSON.stringify(
-        Array.from(hashMapState),
-      )}`,
+      `No item in state with this key... key: ${key}, listState: ${JSON.stringify(
+        listState,
+      )}, uniqueHashMap: ${JSON.stringify(Array.from(hashMapState))}`,
     );
   const throwIfItemIsNotInState = (item) => {
     throwIfKeyIsNotInState(item[uniqueKey]);
